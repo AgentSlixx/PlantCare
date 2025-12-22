@@ -66,4 +66,3 @@ def ui_run():
     pygame.quit()
 
 ui_run()  
-print("hi")
