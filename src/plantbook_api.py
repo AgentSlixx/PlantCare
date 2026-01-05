@@ -1,94 +1,65 @@
-import os
-import json
 import requests
-import urllib.parse
 
-class PlantBookAPI(object):
-    BASE_URL = "https://open.plantbook.io/api/v1"
-    CLIENT_ID = "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN"
-    CLIENT_SECRET = "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx"
+Base_URL = "https://open.plantbook.io/api/v1/"
+MY_CLIENT_ID = "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN" #MY CLIENT ID AND SECRET, MAKE USER INPUT THEIRS
+MY_CLIENT_SECRET = "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx" 
+
+class PlantbookAPI:
     def __init__(self, client_id, client_secret):
-        """
-        Initialize the PlantBookAPI client with client_id and client_secret.
-        :param client_id: The client ID for the PlantBook API.
-        :param client_secret: The client secret for the PlantBook API.
-        """
         self.client_id = client_id
         self.client_secret = client_secret
-        self.logged_in = False
-        self.session = None
+        self.token = self.get_access_token()
+        self.headers = {"Authorization": f"Bearer {self.token}"}
 
-        token = os.environ.get("PLANTBOOK_ACCESS_TOKEN", None)
-        if token is not None:
-            self._create_session(token)
+    def get_access_token(self):
+        response = requests.post(
+            f"{Base_URL}token/",
+            data={
+                "grant_type": "client_credentials",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret
+            }
+        )
+        response.raise_for_status()
+        return response.json()["access_token"]
 
+    def search_plant(self, plant_name):
+        response = requests.get(
+            f"{Base_URL}plant/search",
+            params={"alias": plant_name},
+            headers=self.headers
+        )
+        response.raise_for_status()
+        return response.json().get("results", [])
 
-    def login(self):
-        """
-        Log in to the PlantBook API and store the access_token.
-        :return: True if logged in successfully, otherwise raises an exception.
-        """
-        if self.logged_in:
-            return True
-
-        post_data = {
-            "grant_type": "client_credentials",
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-        }
-
-        r = requests.post(f"{PlantBookAPI.BASE_URL}/token/", data=post_data)
-        if r.status_code != 200:
-            raise Exception(
-                f"Unable to generate access_token (HTTP {r.status_code})")
-
-        self._create_session(r.json()["access_token"])
-        return True
-
-
-    def _create_session(self, token):
-        """
-        Create a session with the PlantBook API using the access_token.
-        :param token: The access_token for the PlantBook API.
-        """
-        self.session = requests.Session()
-        self.session.headers.update({
-            'Authorization': f"Bearer {token}"
-        })
-        self.logged_in = True
-
-    # @endpoint string - The part of the path that comes after /api/v1.
-    #     e.g. https://open.plantbook.io/api/v1/plant/search would have endpoint = "/plant/search"
-    # @kwargs - A list of arguments to pass as ?kwarg1=val1&kwarg2=val2.
-    #     e.g. https://open.plantbook.io/api/v1/plant/search?alias=acer&limit=10&offset=20 would
-    #     have the same endpoint as above and be called like so:
-    #     client.get("/plant/search", alias=acer, limit=1, offset=20)
-    #
-    # API docs for all endpoints and arguments:
-    # https://documenter.getpostman.com/view/12627470/TVsxBRjD#intro
+    def get_plant_detail(self, pid):
+        response = requests.get(
+            f"{Base_URL}plant/detail/{pid}",
+            headers=self.headers
+        )
+        response.raise_for_status()
+        return response.json()
     
+while __name__ == "__main__":
     
-    def get(self, endpoint, **kwargs):
-        """
-        Make a GET request to the PlantBook API.
-        :param endpoint: The API endpoint to query.
-        :param kwargs: The query parameters for the API endpoint.
-        :return: The API response.
-        """
-        url = f"{PlantBookAPI.BASE_URL}{endpoint}"
-        return self.session.get(url, params=kwargs)
+    user_Client_ID = input("Enter your Plantbook Client ID: ")
+    user_client_secret = input("Enter your Plantbook Client Secret: ")
+    plant_name = input("Enter the plant name to search: ")
 
-    def post(self, endpoint, **kwargs):
-        """
-        Make a POST request to the PlantBook API.
-        :param endpoint: The API endpoint to query.
-        :param kwargs: The query parameters for the API endpoint.
-        :return: The API response.
-        """
-        url = f"{PlantBookAPI.BASE_URL}{endpoint}"
-        return self.session.post(url, params=kwargs)
+    Client_ID = user_Client_ID 
+    Client_SECRET = user_client_secret
 
+    api = PlantbookAPI(Client_ID, Client_SECRET)
 
-# Uncomment to test.
-client = PlantBookAPI(os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"])
-print(json.dumps(client.get("/plant/search", alias="acer", limit=5).json()))
+    # Search for Aloe Vera
+    results = api.search_plant(plant_name)
+    if not results:
+        print(f"No plant found for '{plant_name}'")
+        exit()
+
+    pid = results[0]["pid"]
+
+    # Get plant detail
+    detail = api.get_plant_detail(pid)
+
+    print([detail.get("min_light_lux"), detail.get("max_light_lux")])    
