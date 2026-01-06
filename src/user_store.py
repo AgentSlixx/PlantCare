@@ -1,4 +1,5 @@
 import json
+from utils.hashing import hash_algorithm
 from pathlib import Path
 
 # Ensures that the program can find users.json, resolve makes DATA_FILE an absolute, full path, .parent goes up directory leves and /data/users.json points to the file
@@ -19,7 +20,7 @@ def add_user(username, password, client_id, client_secret):
         raise ValueError("User already exists")
 
     data["users"][username] = {
-        "password": password,
+        "password": hash_algorithm(password),
         "client_id": client_id,
         "client_secret": client_secret,
         "plants": []
@@ -46,10 +47,14 @@ def list_users():
     print(list(data["users"].keys()))
 
 #list_users()
-#add_user("JIM".lower(), "Jim4Ever".lower(), "Jim's clientID", "Jims clientSecret")
+add_user("BoB".lower(), "Bobissuperdupercool123££".lower(), "Jim's clientID", "Jims clientSecret")
 #remove_user("jim".lower())
 #list_users()
 
+#list_users()
+#remove_all_users()
+#list_users()
+
 list_users()
-remove_all_users()
+
 list_users()

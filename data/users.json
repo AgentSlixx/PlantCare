@@ -1,3 +1,16 @@
 {
-    "users": {}
+    "users": {
+        "jim": {
+            "password": "9223372036",
+            "client_id": "Jim's clientID",
+            "client_secret": "Jims clientSecret",
+            "plants": []
+        },
+        "bob": {
+            "password": "1029117111",
+            "client_id": "Jim's clientID",
+            "client_secret": "Jims clientSecret",
+            "plants": []
+        }
+    }
 }

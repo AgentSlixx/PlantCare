@@ -27,10 +27,7 @@ def hash_algorithm(input_string):
     if len(hash_str) > 10:
         hash_str = hash_str[:10]
     return hash_str
-
-
-test = hash_algorithm("jhouiIUIDjhfdio87$&") 
-print(test)                       
+                 
 
 #ASK SIR IF HASHING ALGORITHM NEEDS IMPROVING
 #ADJUST, CURRENTLY NOT COMPLEX ENOUGH
