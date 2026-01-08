@@ -32,13 +32,14 @@ def remove_user(username):
     data = load_users()
 
     if username not in data["users"]:
-        return (f"User '{username}' does not exist")
+        return (False, f"User '{username}' does not exist")
 
     if username == "admin":
-        return ("Cannot remove admin user")
+        return (False, "Cannot remove admin user")
     else:
         del data["users"][username]
         save_users(data)
+        return (True, f"User '{username}' removed")
 
 #Admin only (me)
 def remove_all_users():

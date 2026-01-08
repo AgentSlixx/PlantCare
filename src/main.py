@@ -22,4 +22,9 @@ if __name__ == "__main__":
         else:
             print("Invalid option")
 
-#MUST FIX USER LOGIC, ERROR MESSAGES SHOW WHEN IT WORKS WELL AND VICE VERSA            
+#TO DO:
+# Improve error handling in user management
+# Finalize the Plantbook API integration
+# Finalize UI and connect to real sensor data and other functions
+# Add raspberry pi everything
+# Figure out what to do with plant class and how to use inheritance with the json file

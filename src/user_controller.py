@@ -1,5 +1,5 @@
-from user_store import add_user, remove_user, list_users
-
+from user_store import add_user, remove_user, list_users, remove_all_users
+from utils.hashing import hash_algorithm
 
 def manage_users():
     while True:
@@ -7,42 +7,48 @@ def manage_users():
         print("1. Add user")
         print("2. Remove user")
         print("3. List users")
-        print("4. Exit")
+        print("4. Remove all users (admin only)")
+        print("5. Exit")
 
         choice = input("Select an option: ").strip()
 
         if choice == "1":
-            username = input(("Enter username: ").strip()).lower()
-            password = input("Enter password: ").strip()
-            client_id = input("Enter client ID: ").strip()
-            client_secret = input("Enter client secret: ").strip()
+            username = input("Enter username: ")
+            password = input("Enter password: ")
+            client_id = input("Enter client ID: ")
+            client_secret = input("Enter client secret: ")
 
             try:
-                add_user(username, password, client_id, client_secret)
+                add_user(username.lower().strip(), password, client_id, client_secret)
                 print(f"User '{username.strip()}' added successfully")
             except ValueError as error:
                 print(error)
 
         elif choice == "2":
             username = input("Enter username to remove: ").strip().lower()
-
-            if remove_user(username):
-                print(f"User '{username}' removed")
-            elif username == "admin":
-                print("Cannot remove admin user")
+            success, message = remove_user(username)
+            if success:
+                print(message)
             else:
-                print("User not found")
+                print(message)
 
         elif choice == "3":
             data = list_users()
-            
             if data == []:
                 print("No users found")
 
         elif choice == "4":
+            password = input("Enter admin password to confirm: ")
+            hashed_password = hash_algorithm(password)
+            if hashed_password == hash_algorithm("admin"):
+                remove_all_users()
+                print("All users removed except admin")
+            else:
+                print("Incorrect admin password")
+
+        elif choice == "5":
             print("Exiting user management")
             break
-
+        
         else:
             print("Invalid option")
-

@@ -2,10 +2,6 @@ import pygame
 import random
 import time
 
-pygame.init()
-screen = pygame.display.set_mode((600, 400))
-pygame.display.set_caption("Live Sensor Graph")
-
 ORANGE = (255, 159, 15)
 BLUE = (35, 155, 247)
 WHITE = (255, 255, 255)
@@ -25,7 +21,14 @@ new_y = 0
 def ui_run():
     global running, new_y, last_update, State_axis, State_LCL, State_UCL
     
+    running = True  
+    pygame.init()
+    screen = pygame.display.set_mode((600, 400))
+    pygame.display.set_caption("Live Sensor Graph")
+    clock = pygame.time.Clock()
+    
     while running:
+        clock.tick(90)  #Stops the program from running > 90 frames per second
         screen.fill(BLUE)
         
         # Update state colors based on new_y

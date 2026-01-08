@@ -40,7 +40,7 @@ class PlantbookAPI:
         response.raise_for_status()
         return response.json()
     
-while __name__ == "__main__":
+if __name__ == "__main__":
     
     user_Client_ID = input("Enter your Plantbook Client ID: ")
     user_client_secret = input("Enter your Plantbook Client Secret: ")
@@ -51,17 +51,13 @@ while __name__ == "__main__":
 
     api = PlantbookAPI(Client_ID, Client_SECRET)
 
-    # Search for Aloe Vera
+    #Search for plant
     results = api.search_plant(plant_name)
     if not results:
         print(f"No plant found for '{plant_name}'")
         exit()
 
     pid = results[0]["pid"]
-
-    # Get plant detail
-    detail = api.get_plant_detail(pid)
-
-    print([detail.get("min_light_lux"), detail.get("max_light_lux")])    
+ 
 
     
