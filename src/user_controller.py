@@ -12,22 +12,24 @@ def manage_users():
         choice = input("Select an option: ").strip()
 
         if choice == "1":
-            username = input("Enter username: ").strip()
+            username = input(("Enter username: ").strip()).lower()
             password = input("Enter password: ").strip()
             client_id = input("Enter client ID: ").strip()
             client_secret = input("Enter client secret: ").strip()
 
             try:
                 add_user(username, password, client_id, client_secret)
-                print(f"User '{username}' added successfully")
-            except ValueError as e:
-                print(e)
+                print(f"User '{username.strip()}' added successfully")
+            except ValueError as error:
+                print(error)
 
         elif choice == "2":
-            username = input("Enter username to remove: ")
+            username = input("Enter username to remove: ").strip().lower()
 
             if remove_user(username):
                 print(f"User '{username}' removed")
+            elif username == "admin":
+                print("Cannot remove admin user")
             else:
                 print("User not found")
 
@@ -44,4 +46,3 @@ def manage_users():
         else:
             print("Invalid option")
 
-manage_users()

@@ -42,7 +42,10 @@ def remove_user(username):
 
 #Admin only (me)
 def remove_all_users():
-    data = {"users": {"admin": data["users"][admin]}}  # Keep only admin user
+    data = load_users()
+    for i in list(data["users"].keys()):
+        if i != "admin":
+            del data["users"][i]
     save_users(data)
 
 def list_users():
@@ -50,14 +53,11 @@ def list_users():
     print(list(data["users"].keys()))
 
 #list_users()
-#add_user("admin".lower(), "admin".lower(), "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN", "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx")
+#add_user("admin".lower(), "admin", "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN", "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx")
 #remove_user("jim".lower())
 #list_users()
 
 #list_users()
 #remove_all_users()
+#remove_user("admin")
 #list_users()
-
-list_users()
-remove_all_users()
-list_users()
