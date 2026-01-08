@@ -63,3 +63,5 @@ while __name__ == "__main__":
     detail = api.get_plant_detail(pid)
 
     print([detail.get("min_light_lux"), detail.get("max_light_lux")])    
+
+    

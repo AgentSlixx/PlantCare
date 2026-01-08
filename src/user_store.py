@@ -34,12 +34,15 @@ def remove_user(username):
     if username not in data["users"]:
         return (f"User '{username}' does not exist")
 
-    del data["users"][username]
-    save_users(data)
+    if username == "admin":
+        return ("Cannot remove admin user")
+    else:
+        del data["users"][username]
+        save_users(data)
 
 #Admin only (me)
 def remove_all_users():
-    data = {"users": {}}
+    data = {"users": {"admin": data["users"][admin]}}  # Keep only admin user
     save_users(data)
 
 def list_users():
@@ -47,7 +50,7 @@ def list_users():
     print(list(data["users"].keys()))
 
 #list_users()
-add_user("BoB".lower(), "Bobissuperdupercool123££".lower(), "Jim's clientID", "Jims clientSecret")
+#add_user("admin".lower(), "admin".lower(), "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN", "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx")
 #remove_user("jim".lower())
 #list_users()
 
@@ -56,5 +59,5 @@ add_user("BoB".lower(), "Bobissuperdupercool123££".lower(), "Jim's clientID", 
 #list_users()
 
 list_users()
-
+remove_all_users()
 list_users()
