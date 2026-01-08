@@ -1,0 +1,2 @@
+A user not found error message showed up even though the function worked correctly,
+to fix this I tweaked some logic

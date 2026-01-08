@@ -21,3 +21,5 @@ if __name__ == "__main__":
             break
         else:
             print("Invalid option")
+
+#MUST FIX USER LOGIC, ERROR MESSAGES SHOW WHEN IT WORKS WELL AND VICE VERSA            
