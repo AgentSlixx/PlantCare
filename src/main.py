@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
         if main_choice == "1":
             manage_users()
-        elif main_choice == "2":
+        elif main_choice == "2": #TEST AND FIX
             class_run()
         elif main_choice == "3":
             ui_run()
