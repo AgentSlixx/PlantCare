@@ -1,5 +1,6 @@
 import requests
 from plant_class import Plant
+import json
 
 Base_URL = "https://open.plantbook.io/api/v1/"
 MY_CLIENT_ID = "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN" #MY CLIENT ID AND SECRET, MAKE USER INPUT THEIRS
@@ -57,35 +58,53 @@ class PlantbookAPI:
         plant_detail = self.get_plant_detail(pid)
         return plant_detail.get("min_soil_moist"), plant_detail.get("max_soil_moist")
 
-while __name__ == "__main__":
-    
-    user_Client_ID = input("Enter your Plantbook Client ID: ")
-    user_client_secret = input("Enter your Plantbook Client Secret: ")
-    plant_name = input("Enter the plant name to search: ")
+    def class_run():
+        user_Client_ID = input("Enter your Plantbook Client ID: ")
+        user_Client_ID = input("Enter your Plantbook Client ID: ")
+        user_client_secret = input("Enter your Plantbook Client Secret: ")
+        plant_name = input("Enter the plant name to search: ")
 
-    Client_ID = user_Client_ID 
-    Client_SECRET = user_client_secret
+        Client_ID = user_Client_ID 
+        Client_SECRET = user_client_secret
 
-    api = PlantbookAPI(Client_ID, Client_SECRET)
+        api = PlantbookAPI(Client_ID, Client_SECRET)
 
-    #get the plant max and min light, temperature, humidity, moisture and save to a Plant object
-    search_results = api.search_plant(plant_name)
-    if not search_results:
-        print("No plants found with that name.")
-    else:
-        plant_light_limits = api.get_plant_light_limits(search_results[0]['pid'])
-        plant_temperature_limits = api.get_plant_temperature_limits(search_results[0]['pid'])
-        plant_humidity_limits = api.get_plant_humidity_limits(search_results[0]['pid'])
-        plant_moisture_limits = api.get_plant_moisture_limits(search_results[0]['pid'])
+        #get the plant max and min light, temperature, humidity, moisture and save to a Plant object
+        search_results = api.search_plant(plant_name)
+        if not search_results:
+            print("No plants found with that name.")
+        else:
+            plant_light_limits = api.get_plant_light_limits(search_results[0]['pid'])
+            plant_temperature_limits = api.get_plant_temperature_limits(search_results[0]['pid'])
+            plant_humidity_limits = api.get_plant_humidity_limits(search_results[0]['pid'])
+            plant_moisture_limits = api.get_plant_moisture_limits(search_results[0]['pid'])
 
-        print(f"Plant '{plant_name}' added with the following limits:")
-        print(f"Light limits: {plant_light_limits}")
-        print(f"Temperature limits: {plant_temperature_limits}")
-        print(f"Humidity limits: {plant_humidity_limits}")
-        print(f"Moisture limits: {plant_moisture_limits}")
+            print(f"Plant '{plant_name}' added with the following limits:")
+            print(f"Light limits: {plant_light_limits}")
+            print(f"Temperature limits: {plant_temperature_limits}")
+            print(f"Humidity limits: {plant_humidity_limits}")
+            print(f"Moisture limits: {plant_moisture_limits}")
 
-        user_plant = Plant(plant_name, plant_light_limits, plant_temperature_limits, plant_humidity_limits, plant_moisture_limits)
+            user_plant = Plant(plant_name, plant_light_limits, plant_temperature_limits, plant_humidity_limits, plant_moisture_limits)
 
         
-        # add plant info to users.json under the user's plants list
-        # WORK IN PROGRESS
+            # send plant data to users.json in the logged in users plants list
+            with open("data/users.json", "r") as g:
+                users_data = json.load(g)
+            plants_to_json = False
+            while plants_to_json == False:
+                username = input("Enter your username to save the plant: ").lower()
+                if username in users_data["users"]:
+                    users_data["users"][username]["plants"].append({
+                        "name": user_plant.name,
+                        "light_limits": user_plant.light_limits,
+                        "temperature_limits": user_plant.temperature_limits,
+                        "humidity_limits": user_plant.humidity_limits,
+                        "moisture_limits": user_plant.moisture_limits
+                    })
+                    with open("data/users.json", "w") as g:
+                        json.dump(users_data, g, indent=4)
+                    print(f"Plant '{user_plant.name}' saved to user '{username}'.") 
+                    plants_to_json = True   
+                else:
+                    print("Username not found. Plant not saved.")    
