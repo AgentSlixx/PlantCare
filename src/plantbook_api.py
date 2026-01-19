@@ -60,7 +60,6 @@ class PlantbookAPI:
 
     def class_run():
         user_Client_ID = input("Enter your Plantbook Client ID: ")
-        user_Client_ID = input("Enter your Plantbook Client ID: ")
         user_client_secret = input("Enter your Plantbook Client Secret: ")
         plant_name = input("Enter the plant name to search: ")
 
@@ -110,3 +109,6 @@ class PlantbookAPI:
                     print("Username not found. Plant not saved.")    
 
                     #TEST AND FIX
+
+if __name__ == "__main__":
+    PlantbookAPI.class_run()

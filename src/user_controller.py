@@ -8,6 +8,7 @@ def manage_users():
         print("2. Remove user")
         print("3. List users")
         print("4. Remove all users (admin only)")
+        print("5. ")
         print("5. Exit")
 
         choice = input("Select an option: ").strip()
