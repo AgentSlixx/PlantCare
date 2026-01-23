@@ -39,4 +39,4 @@ def user_login():
 #GO OVER AND TEST, LINK TO API PLANT DATA AND ID AND SECRET GOING INTO NECESSARY USER JSON 
 
 user_login()
-print(current_user.username, current_user.client_id, current_user.client_secret, current_user.plants)
+print(current_user.username)
