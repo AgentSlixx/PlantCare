@@ -1,6 +1,7 @@
 import requests
 from plant_class import Plant
 import json
+from user_logins import logged_in_user
 
 Base_URL = "https://open.plantbook.io/api/v1/"
 MY_CLIENT_ID = "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN" #MY CLIENT ID AND SECRET, MAKE USER INPUT THEIRS
@@ -59,11 +60,11 @@ class PlantbookAPI:
         return plant_detail.get("min_soil_moist"), plant_detail.get("max_soil_moist")
 
     def class_run():
-        user_Client_ID = input("Enter your Plantbook Client ID: ")
-        user_client_secret = input("Enter your Plantbook Client Secret: ")
+        user_Client_ID = logged_in_user.client_id
+        user_client_secret = logged_in_user.client_secret
         plant_name = input("Enter the plant name to search: ")
 
-        Client_ID = user_Client_ID 
+        Client_ID = user_Client_ID
         Client_SECRET = user_client_secret
 
         api = PlantbookAPI(Client_ID, Client_SECRET)
@@ -92,7 +93,7 @@ class PlantbookAPI:
                 users_data = json.load(g)
             plants_to_json = False
             while plants_to_json == False:
-                username = input("Enter your username to save the plant: ").lower()
+                username = logged_in_user.username
                 if username in users_data["users"]:
                     users_data["users"][username]["plants"].append({
                         "name": user_plant.name,
