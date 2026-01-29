@@ -22,21 +22,28 @@ def logged_in_menu():
         while True:
             print("\n Main Menu ")
             print("1. Manage Users")
-            print("2. Manage Plants")
-            print("3. Run UI")
-            print("4. Exit")
+            print("2. List Your Info") #REMOVE? ADD ABILITY TO MODIFY INFO?
+            print("3. Manage Plants")
+            print("4. Run UI")
+            print("5. Exit")
 
             main_choice = input("Select an option: ").strip()
 
             if main_choice == "1":
                 manage_users()
-            elif main_choice == "2": #TEST AND FIX
+            elif main_choice == "3": #RE-ORDER
                 PlantbookAPI.class_run()
-            elif main_choice == "3":
-                ui_run()
             elif main_choice == "4":
+                ui_run()
+            elif main_choice == "5":
                 print("Exiting the program")
                 break
+            elif main_choice == "2":
+                print("Testing current user info:")
+                print(f"Username: {current_user.username}")
+                print(f"Client ID: {current_user.client_id}")
+                print(f"Client Secret: {current_user.client_secret}")
+                print(f"Plants: {current_user.plants}")
             else:
                 print("Invalid option")
 
