@@ -8,8 +8,8 @@ def manage_users():
         print("2. Remove user")
         print("3. List users")
         print("4. Remove all users (admin only)")
-        print("5. ")
-        print("5. Exit")
+        print("5. Manage your data")
+        print("6. Exit")
 
         choice = input("Select an option: ").strip()
 
@@ -17,7 +17,7 @@ def manage_users():
             username = input("Enter username: ")
             password = input("Enter password: ")
             client_id = input("Enter client ID: ")
-            client_secret = input("Enter client secret: ")
+            client_secret = input("Enter client Secret: ")
 
             try:
                 add_user(username.lower().strip(), password, client_id, client_secret)
@@ -48,8 +48,18 @@ def manage_users():
                 print("Incorrect admin password")
 
         elif choice == "5":
+            #allow user to change their name, password, client id and client secret
+            user_change_data = input("What do you wish to change? \n1. Username \n2. Password \n3. Client ID \n4. Client Secret\n")
+            if user_change_data == "1":
+                username = input("Enter username: ")
+                
+                #FINISH THIS
+
+        elif choice == "6":
             print("Exiting user management")
             break
         
         else:
             print("Invalid option")
+
+manage_users()            

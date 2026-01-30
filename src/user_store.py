@@ -101,4 +101,6 @@ def remove_plant_from_user(username, plant_name):
 
 #remove_plant_from_user("admin", "aloe vera")
 #add_user("edward ford".lower(), "password123", "ClientIDExample", "ClientSecretExample")
-list_password_hash("edward ford")
+#list_password_hash("edward ford")
+
+remove_all_users()

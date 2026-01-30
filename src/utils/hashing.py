@@ -21,13 +21,12 @@ def hash_algorithm(input_string):
             num_of_capitals += 1
     if num_of_vowels and num_of_vowels != 0:
         hash_value = hash_value << num_of_vowels
-    if num_of_capitals and num_of_capitals != 0:
+    if num_of_capitals != 0:
         hash_value = hash_value * num_of_capitals
     hash_str = str(abs(hash_value))
     if len(hash_str) > 10:
         hash_str = hash_str[:10]
     return hash_str
                  
-
 #ASK SIR IF HASHING ALGORITHM NEEDS IMPROVING
 #ADJUST, CURRENTLY NOT COMPLEX ENOUGH

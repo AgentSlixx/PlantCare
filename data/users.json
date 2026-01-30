@@ -5,18 +5,6 @@
             "client_id": "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN",
             "client_secret": "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx",
             "plants": []
-        },
-        "jim": {
-            "password": "2690999979",
-            "client_id": "ClientIDExample",
-            "client_secret": "ClientSecretExample",
-            "plants": []
-        },
-        "edward ford": {
-            "password": "2690999979",
-            "client_id": "ClientIDExample",
-            "client_secret": "ClientSecretExample",
-            "plants": []
         }
     }
 }
