@@ -100,54 +100,29 @@ def ui_run():
     pygame.quit()
 
   
-def main_ui_run(fullscreen=False, size=(800, 600), fps=60):
-    if not pygame.get_init():
-        pygame.init()
-
+def main_ui_run():
+    pygame.init()
+    running = True
     global screen_height, screen_width
     screen_info = pygame.display.Info()
-    screen_width = screen_width or min(size[0], screen_info.current_w)
-    screen_height = screen_height or min(size[1], screen_info.current_h)
-
-    flags = pygame.FULLSCREEN if fullscreen else pygame.RESIZABLE
-    screen = pygame.display.set_mode((screen_width, screen_height), flags)
+    screen_width = screen_info.current_w
+    screen_height = screen_info.current_h
+    is_fullscreen = False
+    window_width = screen_width 
+    window_height = screen_height 
+    screen = pygame.display.set_mode((window_width, window_height * 0.93), pygame.RESIZABLE)
     pygame.display.set_caption("Main UI")
-
-    clock = pygame.time.Clock()
-    running = True
-    minimized = False
-
-    try:
-        while running:
-            clock.tick(fps)
-
-            events = pygame.event.get()
-            if not events:
-                if minimized:
-                    time.sleep(0.05)
-                continue
-
-            for event in events:
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    running = False
-                elif event.type == pygame.VIDEORESIZE:
-                    screen_width, screen_height = event.w, event.h
-                    screen = pygame.display.set_mode((screen_width, screen_height), flags)
-                elif hasattr(pygame, 'WINDOWEVENT') and event.type == pygame.WINDOWEVENT:
-                    if getattr(event, 'event', None) == pygame.WINDOWEVENT_MINIMIZED:
-                        minimized = True
-                    elif getattr(event, 'event', None) in (pygame.WINDOWEVENT_RESTORED, pygame.WINDOWEVENT_MAXIMIZED):
-                        minimized = False
-
-            if not minimized:
-                w, h = screen.get_size()
-                rect = pygame.Rect(int(w * 0.05), int(h * 0.05), int(w * 0.9), int(h * 0.05))
-                screen.fill(BLUE)
-                pygame.draw.rect(screen, BLACK, rect)  # filled
-                pygame.display.flip()
-    finally:
-        pygame.quit()
-
+    while running:
+        clock = pygame.time.Clock()
+        clock.tick(60)
+        screen.fill(BLUE)
+        pygame.draw.rect(screen, BLUE, (50, 50, window_width - 100, window_height - 150))
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            
+    
 
 if __name__ == "__main__":
     main_ui_run()                
