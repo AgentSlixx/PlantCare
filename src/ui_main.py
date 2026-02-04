@@ -99,7 +99,6 @@ def ui_run():
 
     pygame.quit()
 
-  
 def main_ui_run():
     pygame.init()
     running = True
@@ -107,7 +106,8 @@ def main_ui_run():
     screen_info = pygame.display.Info()
     screen_width = screen_info.current_w
     screen_height = screen_info.current_h
-    is_fullscreen = False
+    
+    
     window_width = screen_width 
     window_height = screen_height 
     screen = pygame.display.set_mode((window_width, window_height * 0.93), pygame.RESIZABLE)
@@ -115,9 +115,11 @@ def main_ui_run():
     while running:
         clock = pygame.time.Clock()
         clock.tick(60)
+        height_scale_factor = screen.get_height() / screen_height
+        width_scale_factor = screen.get_width() / screen_width
         screen.fill(BLUE)
-        pygame.draw.rect(screen, BLUE, (50, 50, window_width - 100, window_height - 150))
-        
+        pygame.draw.rect(screen, BLACK, (window_width * 0.05 * width_scale_factor, window_height * 0.03 * height_scale_factor, window_width * 0.9 * width_scale_factor, window_height * 0.06 * height_scale_factor))
+        pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
