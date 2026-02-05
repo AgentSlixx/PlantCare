@@ -1,130 +1,171 @@
 import pygame
-import random
-import time
 
 ORANGE = (255, 159, 15)
 BLUE = (21, 96, 130)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (224, 15, 0)
+LIGHT_GREY = (200, 200, 200)
 
-# Store points for the graph
-# Use normalized readings (0 = bottom, 1 = top) so the graph scales with window size
-points = [0.5]  # start point (center)
 running = True
-State_axis = ORANGE
-last_update = time.time()
-State_LCL = WHITE
-State_UCL = WHITE
-new_y = 0
 screen_height = None
 screen_width = None
+graph_mode = False
 
-def ui_run():
-    global running, last_update, State_axis, State_LCL, State_UCL, points
 
-    running = True
-    pygame.init()
-    screen = pygame.display.set_mode((600, 400), pygame.RESIZABLE)
-    pygame.display.set_caption("Live Sensor Graph")
-    clock = pygame.time.Clock()
+# Toggle button function
+def handle_graph_toggle(event, window_width, window_height, width_scale_factor, height_scale_factor):
+    global graph_mode
 
-    SAMPLE_INTERVAL = 1.0  # seconds between readings
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        mouse_pos = pygame.mouse.get_pos()
 
-    while running:
-        clock.tick(60)
-        w, h = screen.get_size()
-        screen.fill(BLUE)
+        mid_btn_rect = pygame.Rect(
+            window_width * 0.47 * width_scale_factor,
+            window_height * 0.55 * height_scale_factor,
+            window_width * 0.06 * width_scale_factor,
+            window_height * 0.10 * height_scale_factor
+        )
 
-        # Layout margins (percentages)
-        left = int(w * 0.05)
-        right = int(w * 0.05)
-        top = int(h * 0.15)
-        bottom = int(h * 0.10)
-        graph_w = w - left - right
-        graph_h = h - top - bottom
+        if mid_btn_rect.collidepoint(mouse_pos):
+            graph_mode = not graph_mode
 
-        # Control limits as proportions from top of the graph area
-        UCL_rel = 0.35
-        LCL_rel = 0.65
-        UCL_y = top + int(UCL_rel * graph_h)
-        LCL_y = top + int(LCL_rel * graph_h)
 
-        # Update state colors based on last reading (if any)
-        if points:
-            last_y_norm = points[-1]
-            last_pixel_y = top + int((1 - last_y_norm) * graph_h)
-            if last_pixel_y > LCL_y or last_pixel_y < UCL_y:
-                State_axis = RED
-                State_LCL = RED
-                State_UCL = RED
-            else:
-                State_axis = ORANGE
-                State_LCL = WHITE
-                State_UCL = WHITE
+# Main UI draw function
+def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, height_scale_factor):
+    global graph_mode
 
-        # Draw axes and control lines
-        pygame.draw.line(screen, State_axis, (left, top + graph_h), (left + graph_w, top + graph_h), 2)
-        pygame.draw.line(screen, State_axis, (left, top), (left, top + graph_h), 2)
-        pygame.draw.line(screen, State_LCL, (left, LCL_y), (left + graph_w, LCL_y), 1)
-        pygame.draw.line(screen, State_UCL, (left, UCL_y), (left + graph_w, UCL_y), 1)
+    font_title = pygame.font.Font(None, int(36 * height_scale_factor))
+    font_label = pygame.font.Font(None, int(24 * height_scale_factor))
+    font_small = pygame.font.Font(None, int(22 * height_scale_factor))
 
-        # Take a new reading every SAMPLE_INTERVAL seconds
-        if time.time() - last_update > SAMPLE_INTERVAL:
-            new_y = random.uniform(0.1, 0.9)  # normalized reading
-            points.append(new_y)
-            # keep number of samples reasonable for current width
-            max_samples = max(10, graph_w // 8)
-            if len(points) > max_samples:
-                points = points[-max_samples:]
-            last_update = time.time()
+    # Top black bar
+    top_bar_rect = pygame.Rect(
+        window_width * 0.05 * width_scale_factor,
+        window_height * 0.03 * height_scale_factor,
+        window_width * 0.9 * width_scale_factor,
+        window_height * 0.06 * height_scale_factor
+    )
 
-        # Draw stored points as a continuous line (evenly spaced across the graph width)
-        num = len(points)
-        if num > 1:
-            pixel_points = []
-            for i, yn in enumerate(points):
-                x = left + int((i / (num - 1)) * graph_w)
-                y = top + int((1 - yn) * graph_h)
-                pixel_points.append((x, y))
-            pygame.draw.lines(screen, BLACK, False, pixel_points, 2)
+    pygame.draw.rect(screen, BLACK, top_bar_rect)
+    title_text = font_title.render("Plant Care System", True, WHITE)
+    screen.blit(title_text, (top_bar_rect.centerx - title_text.get_width() // 2, top_bar_rect.y + 10))
 
-        pygame.display.flip()
+    # Sensor label boxes
+    labels = ["Humidity", "Temperature", "Moisture", "Sunlight"]
+    stat_box_y = window_height * 0.13 * height_scale_factor
+    stat_box_width = window_width * 0.18 * width_scale_factor
+    spacing = window_width * 0.22 * width_scale_factor
 
-        # Handle events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                running = False
-            
+    for i in range(4):
+        x = window_width * 0.07 * width_scale_factor + spacing * i
+        label_rect = pygame.Rect(x, stat_box_y, stat_box_width, window_height * 0.05 * height_scale_factor)
+        pygame.draw.rect(screen, WHITE, label_rect)
+        label_text = font_label.render(labels[i], True, BLACK)
+        screen.blit(label_text, (label_rect.x + 8, label_rect.y + 6))
 
-    pygame.quit()
+    # Graph display area
+    graph_area = pygame.Rect(
+        window_width * 0.07 * width_scale_factor,
+        window_height * 0.20 * height_scale_factor,
+        window_width * 0.86 * width_scale_factor,
+        window_height * 0.28 * height_scale_factor
+    )
+
+    pygame.draw.rect(screen, BLUE, graph_area, 2)
+
+    # Graph mode
+    spacing = graph_area.width / 4
+    axis_height = graph_area.height * 0.75
+
+    if graph_mode:
+        for i in range(4):
+            x_origin = graph_area.x + spacing * i + spacing * 0.15
+            y_origin = graph_area.bottom - 15
+
+            # Vertical axis
+            pygame.draw.line(screen, WHITE, (x_origin, y_origin), (x_origin, y_origin - axis_height), 2)
+
+            # Horizontal axis
+            pygame.draw.line(screen, WHITE, (x_origin, y_origin), (x_origin + spacing * 0.6, y_origin), 2)
+
+    # Toggle buttons
+    btn_y = window_height * 0.55 * height_scale_factor
+    btn_w = window_width * 0.06 * width_scale_factor
+    btn_h = window_height * 0.10 * height_scale_factor
+
+    left_btn  = pygame.Rect(window_width * 0.28 * width_scale_factor, btn_y, btn_w, btn_h)
+    mid_btn   = pygame.Rect(window_width * 0.47 * width_scale_factor, btn_y, btn_w, btn_h)
+    right_btn = pygame.Rect(window_width * 0.66 * width_scale_factor, btn_y, btn_w, btn_h)
+
+    pygame.draw.rect(screen, LIGHT_GREY, left_btn)
+    pygame.draw.rect(screen, LIGHT_GREY, mid_btn)
+    pygame.draw.rect(screen, LIGHT_GREY, right_btn)
+
+    # Red cross on graph mode
+    if graph_mode:
+        pygame.draw.line(screen, RED, mid_btn.topleft, mid_btn.bottomright, 3)
+        pygame.draw.line(screen, RED, mid_btn.bottomleft, mid_btn.topright, 3)
+
+    # Button labels
+    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (left_btn.x - 15, left_btn.bottom + 6))
+    screen.blit(font_small.render("GRAPH MODE", True, WHITE), (mid_btn.x + 8, mid_btn.bottom + 6))
+    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (right_btn.x - 15, right_btn.bottom + 6))
+
+    # Bottom text box
+    bottom_bar_rect = pygame.Rect(
+        window_width * 0.07 * width_scale_factor,
+        window_height * 0.78 * height_scale_factor,
+        window_width * 0.86 * width_scale_factor,
+        window_height * 0.08 * height_scale_factor
+    )
+
+    pygame.draw.rect(screen, WHITE, bottom_bar_rect, border_radius=4)
+
+    bottom_text = font_label.render(
+        "TEXT PLACEHOLDER — advice will appear here later",
+        True, BLACK
+    )
+
+    screen.blit(bottom_text, (bottom_bar_rect.x + 12, bottom_bar_rect.y + 18))
+
 
 def main_ui_run():
+    global running, screen_height, screen_width
+
     pygame.init()
-    running = True
-    global screen_height, screen_width
+
     screen_info = pygame.display.Info()
     screen_width = screen_info.current_w
     screen_height = screen_info.current_h
-    
-    
-    window_width = screen_width 
-    window_height = screen_height 
-    screen = pygame.display.set_mode((window_width, window_height * 0.93), pygame.RESIZABLE)
+
+    window_width = screen_width
+    window_height = screen_height
+
+    screen = pygame.display.set_mode((window_width, int(window_height * 0.93)), pygame.RESIZABLE)
     pygame.display.set_caption("Main UI")
+
+    clock = pygame.time.Clock()
+
     while running:
-        clock = pygame.time.Clock()
         clock.tick(60)
-        height_scale_factor = screen.get_height() / screen_height
         width_scale_factor = screen.get_width() / screen_width
+        height_scale_factor = screen.get_height() / screen_height
+
         screen.fill(BLUE)
-        pygame.draw.rect(screen, BLACK, (window_width * 0.05 * width_scale_factor, window_height * 0.03 * height_scale_factor, window_width * 0.9 * width_scale_factor, window_height * 0.06 * height_scale_factor))
-        pygame.display.flip()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
-    
+
+            handle_graph_toggle(event, window_width, window_height, width_scale_factor, height_scale_factor)
+
+        draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, height_scale_factor)
+
+        pygame.display.flip()
+
+    pygame.quit()
+
 
 if __name__ == "__main__":
-    main_ui_run()                
+    main_ui_run()
