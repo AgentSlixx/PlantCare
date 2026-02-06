@@ -7,9 +7,8 @@ BLACK = (0, 0, 0)
 RED = (224, 15, 0)
 LIGHT_GREY = (200, 200, 200)
 
-running = True
 
-def handle_button_toggles()
+def handle_button_toggles():
     # Toggle button function
     pass
 
@@ -18,12 +17,25 @@ def main_ui_function(screen, window_width, window_height, width_scale_factor, he
     pygame.init()
     global graph_mode
 
-    user_screen_width, user_screen_height = screen.get_size()
-    ui_window_width = user_screen_width * 0.8
-    ui_window_height = user_screen_height * 0.8
-
+    # Creates the main window
+    screen = pygame.display.set_mode((window_width, window_height))
+    pygame.display.set_caption("Plant Care System")
     
+    # Main loop
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                handle_button_toggles()
 
-    font_title = pygame.font.Font(None, int(36 * height_scale_factor))
-    font_label = pygame.font.Font(None, int(24 * height_scale_factor))
-    font_regular = pygame.font.Font(None, int(22 * height_scale_factor)) 
+        # Clear the screen
+        screen.fill(BLUE)
+
+        # Draw UI elements here (buttons, graphs, etc.)
+
+        # Update the display
+        pygame.display.flip()
+
+main_ui_function(None, 800, 600, 1, 1)        
