@@ -52,7 +52,7 @@ def manage_users():
             user_change_data = input("What do you wish to change? \n1. Username \n2. Password \n3. Client ID \n4. Client Secret\n")
             if user_change_data == "1":
                 username = input("Enter username: ")
-                
+                new_username = input("Enter new username: ")
                 #FINISH THIS
 
         elif choice == "6":
