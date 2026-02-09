@@ -1,11 +1,12 @@
-from user_controller import manage_users
-from ui_mainyo import ui_run
+from user_controller import manage_users, manage_user_data
+from ui_mainyo import main_ui_run
 from plantbook_api import PlantbookAPI
-from user_logins import user_login, logged_in_user
+from user_logins import user_login
+
 
 logged_in = False
 current_user = None
- 
+running = True
 
 def logged_out_menu():
     print("Login to access Plant Management System")
@@ -13,13 +14,15 @@ def logged_out_menu():
     logged_in, current_user = user_login()
     if logged_in:
         print(f"Welcome, {current_user.username}!")
+        # current_user is already an instance of logged_in_user_class
     else:
         print("Login failed. Please try again.")    
 
 def logged_in_menu():
+    global running
     if __name__ == "__main__":
         print("Welcome to the Plant Management System")
-        while True:
+        while running:
             print("\n Main Menu ")
             print("1. Manage Users")
             print("2. Manage your data") #REMOVE? ADD ABILITY TO MODIFY INFO?
@@ -37,10 +40,19 @@ def logged_in_menu():
                 print(f"Client ID: {current_user.client_id}")
                 print(f"Client Secret: {current_user.client_secret}")
                 print(f"Plants: {current_user.plants}")
+                manage_user_data(current_user)
             elif main_choice == "3": #RE-ORDER
-                PlantbookAPI.class_run()
+                user_plant_search_decision = input("Do you want to search for a new plant to add to your collection? (y/n): ").strip().lower()
+                if user_plant_search_decision == "y":
+                    PlantbookAPI.plant_class_run(current_user)
+                elif user_plant_search_decision == "n":
+                    print("Returning to main menu") 
+                    break
+                else:
+                    print("Invalid option, returning to main menu")
+                    break        
             elif main_choice == "4":
-                ui_run()
+                main_ui_run()
             elif main_choice == "5":
                 print("Exiting the program")
                 break
@@ -49,28 +61,32 @@ def logged_in_menu():
 
             if main_choice == "1":
                 manage_users()
-            elif main_choice == "3": #RE-ORDER
-                PlantbookAPI.class_run()
-            elif main_choice == "4":
-                ui_run()
-            elif main_choice == "5":
-                print("Exiting the program")
-                break
             elif main_choice == "2":
                 print("Testing current user info:")
                 print(f"Username: {current_user.username}")
                 print(f"Client ID: {current_user.client_id}")
                 print(f"Client Secret: {current_user.client_secret}")
                 print(f"Plants: {current_user.plants}")
+            elif main_choice == "3": #RE-ORDER
+                PlantbookAPI.plant_class_run(current_user)
+            elif main_choice == "4":
+                main_ui_run()
+            elif main_choice == "5":
+                print("Exiting the program")
+                running = False
+                break
             else:
                 print("Invalid option")
 
-if not logged_in:
-    logged_out_menu()
-    if logged_in:
+            
+while running:
+    if not logged_in:
+        logged_out_menu()      #Bugs in exiting main program, and basically every other option, need to fix
+    elif logged_in:
         logged_in_menu()
-else:
-    logged_in_menu()    
+    elif running == False:
+        print("Exiting the program")
+        break       
 
 
 #TO DO:

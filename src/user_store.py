@@ -53,10 +53,6 @@ def list_users():
     data = load_users()
     print(list(data["users"].keys()))
 
-def load_all_user_info():
-    with open(DATA_FILE, "r") as f: #NOT USED YET, DELETE IF NEVER USED
-        return json.load(f)
-
 def list_password_hash(username):
     users = load_users()
     user_found = False
@@ -103,4 +99,4 @@ def remove_plant_from_user(username, plant_name):
 #add_user("edward ford".lower(), "password123", "ClientIDExample", "ClientSecretExample")
 #list_password_hash("edward ford")
 
-remove_all_users()
+#remove_all_users()

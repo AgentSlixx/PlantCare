@@ -108,9 +108,9 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
         pygame.draw.line(screen, RED, mid_btn.bottomleft, mid_btn.topright, 3)
 
     # Button labels
-    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (left_btn.x - 15, left_btn.bottom + 6))
-    screen.blit(font_small.render("GRAPH MODE", True, WHITE), (mid_btn.x + 8, mid_btn.bottom + 6))
-    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (right_btn.x - 15, right_btn.bottom + 6))
+    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (left_btn.x , left_btn.bottom + 6))
+    screen.blit(font_small.render("GRAPH MODE", True, WHITE), (mid_btn.x , mid_btn.bottom + 6))
+    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (right_btn.x , right_btn.bottom + 6))
 
     # Bottom text box
     bottom_bar_rect = pygame.Rect(

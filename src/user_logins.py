@@ -1,7 +1,7 @@
 from user_store import load_all_user_info
 from utils.hashing import hash_algorithm
 
-class logged_in_user:
+class logged_in_user_class:
     def __init__(self, username, password_hash, client_id, client_secret, plants):
         self.username = username
         self.password_hash = password_hash
@@ -22,7 +22,7 @@ def user_login():
             print(f"User '{username}' logged in successfully")
             logged_in = True
             user_data = data["users"][username]
-            current_user = logged_in_user(
+            current_user = logged_in_user_class(
                 username,
                 user_data.get("password"),
                 user_data.get("client_id"),

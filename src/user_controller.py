@@ -1,5 +1,6 @@
-from user_store import add_user, remove_user, list_users, remove_all_users
+from user_store import add_user, remove_user, list_users, remove_all_users, remove_plant_from_user, save_users, load_users
 from utils.hashing import hash_algorithm
+
 
 def manage_users():
     while True:
@@ -8,8 +9,7 @@ def manage_users():
         print("2. Remove user")
         print("3. List users")
         print("4. Remove all users (admin only)")
-        print("5. Manage your data")
-        print("6. Exit")
+        print("5. Exit user management")
 
         choice = input("Select an option: ").strip()
 
@@ -48,18 +48,20 @@ def manage_users():
                 print("Incorrect admin password")
 
         elif choice == "5":
-            #allow user to change their name, password, client id and client secret
-            user_change_data = input("What do you wish to change? \n1. Username \n2. Password \n3. Client ID \n4. Client Secret\n")
-            if user_change_data == "1":
-                username = input("Enter username: ")
-                new_username = input("Enter new username: ")
-                #FINISH THIS
-
-        elif choice == "6":
             print("Exiting user management")
             break
         
         else:
             print("Invalid option")
 
-manage_users()            
+def manage_user_data(current_user):
+    user_change_data = input("What do you wish to change? \n1. Username \n2. Password \n3. Client ID \n4. Client Secret\n")
+    if user_change_data == "1":
+        new_username = input("Enter new username: ")  
+        data = load_users()
+        for i in data["users"]:
+            if i == current_user.username:
+                data["users"][new_username] = data["users"].pop(i)
+                save_users(data)
+                print(f"Username changed to '{new_username}'")
+                break

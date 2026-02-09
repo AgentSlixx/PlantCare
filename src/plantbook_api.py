@@ -1,14 +1,17 @@
 import requests
 from plant_class import Plant
 import json
-from user_logins import logged_in_user
 
 Base_URL = "https://open.plantbook.io/api/v1/"
-MY_CLIENT_ID = "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN" #MY CLIENT ID AND SECRET, MAKE USER INPUT THEIRS
-MY_CLIENT_SECRET = "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx" 
+
 
 class PlantbookAPI:
-    def __init__(self, client_id, client_secret):
+    def __init__(self, client_id=None, client_secret=None, current_user=None):
+        if current_user is not None:
+            client_id = getattr(current_user, "client_id", None)
+            client_secret = getattr(current_user, "client_secret", None)
+        if not client_id or not client_secret:
+            raise ValueError("client_id and client_secret must be provided")
         self.client_id = client_id
         self.client_secret = client_secret
         self.token = self.get_access_token()
@@ -59,17 +62,15 @@ class PlantbookAPI:
         plant_detail = self.get_plant_detail(pid)
         return plant_detail.get("min_soil_moist"), plant_detail.get("max_soil_moist")
 
-    def class_run():
-        user_Client_ID = logged_in_user.client_id
-        user_client_secret = logged_in_user.client_secret
+    def plant_class_run(logged_in_user):
+        if logged_in_user is None:
+            print("No logged-in user provided")
+            return
         plant_name = input("Enter the plant name to search: ")
 
-        Client_ID = user_Client_ID
-        Client_SECRET = user_client_secret
+        api = PlantbookAPI(client_id=logged_in_user.client_id, client_secret=logged_in_user.client_secret)
 
-        api = PlantbookAPI(Client_ID, Client_SECRET)
-
-        #get the plant max and min light, temperature, humidity, moisture and save to a Plant object
+        # get the plant max and min light, temperature, humidity, moisture and save to a Plant object
         search_results = api.search_plant(plant_name)
         if not search_results:
             print("No plants found with that name.")
@@ -88,28 +89,26 @@ class PlantbookAPI:
             user_plant = Plant(plant_name, plant_light_limits, plant_temperature_limits, plant_humidity_limits, plant_moisture_limits)
 
         
-            # send plant data to users.json in the logged in users plants list
+            # send plant data to users.json in the logged in user's plants list
             with open("data/users.json", "r") as g:
                 users_data = json.load(g)
-            plants_to_json = False
-            while plants_to_json == False:
-                username = logged_in_user.username
-                if username in users_data["users"]:
-                    users_data["users"][username]["plants"].append({
-                        "name": user_plant.name,
-                        "light_limits": user_plant.light_limits,
-                        "temperature_limits": user_plant.temperature_limits,
-                        "humidity_limits": user_plant.humidity_limits,
-                        "moisture_limits": user_plant.moisture_limits
-                    })
-                    with open("data/users.json", "w") as g:
-                        json.dump(users_data, g, indent=4)
-                    print(f"Plant '{user_plant.name}' saved to user '{username}'.") 
-                    plants_to_json = True   
-                else:
-                    print("Username not found. Plant not saved.")    
+            username = logged_in_user.username
+            if username in users_data.get("users", {}):
+                users_data["users"][username].setdefault("plants", [])
+                users_data["users"][username]["plants"].append({
+                    "name": user_plant.name,
+                    "light_limits": user_plant.light_limits,
+                    "temperature_limits": user_plant.temperature_limits,
+                    "humidity_limits": user_plant.humidity_limits,
+                    "moisture_limits": user_plant.moisture_limits
+                })
+                with open("data/users.json", "w") as g:
+                    json.dump(users_data, g, indent=4)
+                print(f"Plant '{user_plant.name}' saved to user '{username}'.")
+            else:
+                print("Username not found. Plant not saved.")    
 
                     #TEST AND FIX
 
-if __name__ == "__main__":
-    PlantbookAPI.class_run()
+#if __name__ == "__main__":
+    #PlantbookAPI.class_run()

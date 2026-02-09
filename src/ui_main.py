@@ -35,7 +35,14 @@ def main_ui_function(screen, window_width, window_height, width_scale_factor, he
 
         # Draw UI elements here (buttons, graphs, etc.)
 
+        top_bar_rect = pygame.Rect(
+        window_width * 0.05 * width_scale_factor,
+        window_height * 0.03 * height_scale_factor,
+        window_width * 0.9 * width_scale_factor,
+        window_height * 0.06 * height_scale_factor
+    )
+
         # Update the display
         pygame.display.flip()
 
-main_ui_function(None, 800, 600, 1, 1)        
+      
