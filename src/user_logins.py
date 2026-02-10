@@ -1,4 +1,4 @@
-from user_store import load_all_user_info
+from user_store import load_users
 from utils.hashing import hash_algorithm
 
 class logged_in_user_class:
@@ -12,7 +12,7 @@ class logged_in_user_class:
 def user_login():
     username = input("Enter username: ").strip().lower()
     password = input("Enter password: ")
-    data = load_all_user_info()
+    data = load_users()
     logged_in = False
     current_user = None
 

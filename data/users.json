@@ -44,18 +44,6 @@
                     ]
                 }
             ]
-        },
-        "mynameisedwardford": {
-            "password": "1599999999",
-            "client_id": "l",
-            "client_secret": "p",
-            "plants": []
-        },
-        "tester": {
-            "password": "2199023255",
-            "client_id": "test_id",
-            "client_secret": "test_secret",
-            "plants": []
         }
     }
 }

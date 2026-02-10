@@ -55,7 +55,7 @@ def manage_users():
             print("Invalid option")
 
 def manage_user_data(current_user):
-    user_change_data = input("What do you wish to change? \n1. Username \n2. Password \n3. Client ID \n4. Client Secret\n")
+    user_change_data = input("What do you wish to change? \n1. Username \n2. Password \n3. Client ID \n4. Client Secret\n5. Remove Plant\n6. Exit\nSelect an option: ").strip()
     if user_change_data == "1":
         new_username = input("Enter new username: ")  
         data = load_users()
@@ -64,4 +64,35 @@ def manage_user_data(current_user):
                 data["users"][new_username] = data["users"].pop(i)
                 save_users(data)
                 print(f"Username changed to '{new_username}'")
-                break
+    elif user_change_data == "2":
+        new_password = input("Enter new password: ")
+        data = load_users()
+        for i in data["users"]:
+            if i == current_user.username:
+                data["users"][i]["password"] = hash_algorithm(new_password)
+                save_users(data)
+                print("Password changed successfully")
+    elif user_change_data == "3":
+        new_client_id = input("Enter new client ID: ")
+        data = load_users()
+        for i in data["users"]:
+            if i == current_user.username:
+                data["users"][i]["client_id"] = new_client_id
+                save_users(data)
+                print("Client ID changed successfully")
+    elif user_change_data == "4":
+        new_client_secret = input("Enter new client secret: ")
+        data = load_users()
+        for i in data["users"]:
+            if i == current_user.username:
+                data["users"][i]["client_secret"] = new_client_secret
+                save_users(data)
+                print("Client secret changed successfully")
+    elif user_change_data == "5":
+        plant_name = input("Enter the name of the plant to remove: ")
+        if plant_name in current_user.plants:
+            remove_plant_from_user(current_user.username, plant_name)
+        else:
+            print("Plant not found in user's collection")
+    elif user_change_data == "6":
+        print("Exiting user data management")                                    
