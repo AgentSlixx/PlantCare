@@ -14,7 +14,6 @@ def logged_out_menu():
     logged_in, current_user = user_login()
     if logged_in:
         print(f"Welcome, {current_user.username}!")
-        # current_user is already an instance of logged_in_user_class
     else:
         print("Login failed. Please try again.")    
 
