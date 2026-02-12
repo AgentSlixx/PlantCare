@@ -89,9 +89,11 @@ def manage_user_data(current_user):
                 save_users(data)
                 print("Client secret changed successfully")
     elif user_change_data == "5":
-        plant_name = input("Enter the name of the plant to remove: ")
-        if plant_name in current_user.plants:
-            remove_plant_from_user(current_user.username, plant_name)
+        plant_name_input = input("Enter the name of the plant to remove: ")
+        plant_names = [ for plant in current_user.plants]
+        print(plant_names)
+        if plant_name_input in plant_names:
+            remove_plant_from_user(current_user.username, plant_name_input)
         else:
             print("Plant not found in user's collection")
     elif user_change_data == "6":
