@@ -1,5 +1,5 @@
 import requests
-from plant_class import Plant
+from plant_classes import Plant
 import json
 
 Base_URL = "https://open.plantbook.io/api/v1/"
