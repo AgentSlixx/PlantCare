@@ -61,7 +61,7 @@ def logged_in_menu():
             
 while running:
     if not logged_in:
-        logged_out_menu()      #Bugs in exiting main program, and basically every other option, need to fix
+        logged_out_menu()      
     elif logged_in:
         logged_in_menu()
     elif running == False:
@@ -69,9 +69,3 @@ while running:
         break       
 
 
-#TO DO:
-# Improve error handling in user management
-# Finalize the Plantbook API integration
-# Finalize UI and connect to real sensor data and other functions
-# Add raspberry pi everything
-# Figure out what to do with plant class and how to use inheritance with the json file

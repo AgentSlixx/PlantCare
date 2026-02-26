@@ -12,23 +12,31 @@ screen_height = None
 screen_width = None
 graph_mode = False
 user_input = ""
+output_lines = []  
+MAX_OUTPUT_LINES = 20
+
+def log_output(message):
+    global output_lines
+    output_lines.append(str(message))
+    if len(output_lines) > MAX_OUTPUT_LINES:
+        output_lines.pop(0)
 
 
-# Toggle button function
+# Toggle button function 
 def handle_graph_toggle(event, window_width, window_height, width_scale_factor, height_scale_factor):
     global graph_mode
 
     if event.type == pygame.MOUSEBUTTONDOWN:
         mouse_pos = pygame.mouse.get_pos()
 
-        mid_btn_rect = pygame.Rect(
-            window_width * 0.47 * width_scale_factor,
+        graph_btn_rect = pygame.Rect(
+            window_width * 0.07 * width_scale_factor,
             window_height * 0.55 * height_scale_factor,
             window_width * 0.06 * width_scale_factor,
             window_height * 0.10 * height_scale_factor
         )
 
-        if mid_btn_rect.collidepoint(mouse_pos):
+        if graph_btn_rect.collidepoint(mouse_pos):
             graph_mode = not graph_mode
 
 
@@ -90,37 +98,44 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
             # Horizontal axis
             pygame.draw.line(screen, WHITE, (x_origin, y_origin), (x_origin + spacing * 0.6, y_origin), 2)
 
-    # Toggle buttons
+    # Toggle button (graph mode) on left
     btn_y = window_height * 0.55 * height_scale_factor
     btn_w = window_width * 0.06 * width_scale_factor
     btn_h = window_height * 0.10 * height_scale_factor
 
-    left_btn = pygame.Rect(window_width * 0.28 * width_scale_factor, btn_y, btn_w, btn_h)
-    mid_btn = pygame.Rect(window_width * 0.47 * width_scale_factor, btn_y, btn_w, btn_h)
-    right_btn = pygame.Rect(window_width * 0.66 * width_scale_factor, btn_y, btn_w, btn_h)
+    graph_btn = pygame.Rect(window_width * 0.07 * width_scale_factor, btn_y, btn_w, btn_h)
+    pygame.draw.rect(screen, LIGHT_GREY, graph_btn)
 
-    pygame.draw.rect(screen, LIGHT_GREY, left_btn)
-    pygame.draw.rect(screen, LIGHT_GREY, mid_btn)
-    pygame.draw.rect(screen, LIGHT_GREY, right_btn)
-
-    # Red cross on graph mode
+    # Red cross when active
     if graph_mode:
-        pygame.draw.line(screen, RED, mid_btn.topleft, mid_btn.bottomright, 3)
-        pygame.draw.line(screen, RED, mid_btn.bottomleft, mid_btn.topright, 3)
+        pygame.draw.line(screen, RED, graph_btn.topleft, graph_btn.bottomright, 3)
+        pygame.draw.line(screen, RED, graph_btn.bottomleft, graph_btn.topright, 3)
     else:
-        for i in range(4): #adds a small rectangle instead of the graphs to hold the values when graph mode is off
+        for i in range(4):
             x = graph_area.x + spacing * i + spacing * 0.15
             value_rect = pygame.Rect(x, graph_area.bottom - axis_height, spacing * 0.6, 30)
             pygame.draw.rect(screen, LIGHT_GREY, value_rect)
             value_text = font_small.render("Value: --", True, BLACK)
             screen.blit(value_text, (value_rect.x + 8, value_rect.y + 6))
-            
 
+    # Button label
+    screen.blit(font_small.render("GRAPH MODE", True, WHITE), (graph_btn.x , graph_btn.bottom + 6))
 
-    # Button labels
-    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (left_btn.x , left_btn.bottom + 6))
-    screen.blit(font_small.render("GRAPH MODE", True, WHITE), (mid_btn.x , mid_btn.bottom + 6))
-    screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (right_btn.x , right_btn.bottom + 6))
+    # Terminal/output area to the right of button
+    term_rect = pygame.Rect(
+        window_width * 0.25 * width_scale_factor,
+        window_height * 0.52 * height_scale_factor,
+        window_width * 0.68 * width_scale_factor,
+        btn_h * 1.5
+    )
+    pygame.draw.rect(screen, BLACK, term_rect)
+
+    # render recent output lines inside the terminal box
+    line_height = font_small.get_height()
+    max_lines = int(term_rect.height // line_height) - 1
+    for idx, line in enumerate(output_lines[-max_lines:]):
+        text_surf = font_small.render(line, True, WHITE)
+        screen.blit(text_surf, (term_rect.x + 5, term_rect.y + 5 + idx * line_height))
 
     # Bottom input box
     bottom_bar_rect = pygame.Rect(
@@ -159,10 +174,25 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
         window_height * 0.10 * height_scale_factor
     )
     pygame.draw.rect(screen, WHITE, command_list_rect, border_radius=4)
-    screen.blit(font_generic.render("Command List: ", True, BLACK), (command_list_rect.x + 12, command_list_rect.y + 18))
+    commands = [
+        "Command List:",
+        "water <ml>",
+        "sunlight <lux>",
+        "temperature <C>",
+        "humidity <%>"
+    ]
+    line_y = command_list_rect.y + 8
+    for cmd in commands:
+        cmd_text = font_small.render(cmd, True, BLACK)
+        screen.blit(cmd_text, (command_list_rect.x + 12, line_y))
+        line_y += 18
 
 def main_ui_run():
-    global running, screen_height, screen_width, user_input
+    global running, screen_height, screen_width, user_input, graph_mode
+
+    running = True
+    user_input = ""
+    graph_mode = False
 
     pygame.init()
 
@@ -192,8 +222,18 @@ def main_ui_run():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     user_input = user_input[:-1]
+                elif event.key == pygame.K_RETURN: 
+                    if user_input.strip() != "":
+                        log_output(f"> {user_input}")  
+                        if user_input.lower() == "help":
+                            log_output("Available commands: help, water, sunlight, status")
+                        elif user_input.lower() == "status":
+                            log_output("Plant status: Humidity=--, Moisture=--, Sunlight=--, Temperature=--")
+                        else:
+                            log_output("Unknown command")
+                    user_input = ""  
                 elif event.unicode.isprintable():
-                    user_input += event.unicode
+                    user_input += event.unicode #appends only if it's a valid character
 
             handle_graph_toggle(event, window_width, window_height, width_scale_factor, height_scale_factor)
 
