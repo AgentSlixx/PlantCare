@@ -11,6 +11,7 @@ running = True
 screen_height = None
 screen_width = None
 graph_mode = False
+user_input = ""
 
 
 # Toggle button function
@@ -36,7 +37,7 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
     global graph_mode
 
     font_title = pygame.font.Font(None, int(36 * height_scale_factor))
-    font_label = pygame.font.Font(None, int(24 * height_scale_factor))
+    font_generic = pygame.font.Font(None, int(24 * height_scale_factor))
     font_small = pygame.font.Font(None, int(22 * height_scale_factor))
 
     # Top black bar
@@ -61,7 +62,7 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
         x = window_width * 0.07 * width_scale_factor + spacing * i
         label_rect = pygame.Rect(x, stat_box_y, stat_box_width, window_height * 0.05 * height_scale_factor)
         pygame.draw.rect(screen, WHITE, label_rect)
-        label_text = font_label.render(labels[i], True, BLACK)
+        label_text = font_generic.render(labels[i], True, BLACK)
         screen.blit(label_text, (label_rect.x + 8, label_rect.y + 6))
 
     # Graph display area
@@ -106,32 +107,62 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
     if graph_mode:
         pygame.draw.line(screen, RED, mid_btn.topleft, mid_btn.bottomright, 3)
         pygame.draw.line(screen, RED, mid_btn.bottomleft, mid_btn.topright, 3)
+    else:
+        for i in range(4): #adds a small rectangle instead of the graphs to hold the values when graph mode is off
+            x = graph_area.x + spacing * i + spacing * 0.15
+            value_rect = pygame.Rect(x, graph_area.bottom - axis_height, spacing * 0.6, 30)
+            pygame.draw.rect(screen, LIGHT_GREY, value_rect)
+            value_text = font_small.render("Value: --", True, BLACK)
+            screen.blit(value_text, (value_rect.x + 8, value_rect.y + 6))
+            
+
 
     # Button labels
     screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (left_btn.x , left_btn.bottom + 6))
     screen.blit(font_small.render("GRAPH MODE", True, WHITE), (mid_btn.x , mid_btn.bottom + 6))
     screen.blit(font_small.render("WORK IN PROGRESS", True, WHITE), (right_btn.x , right_btn.bottom + 6))
 
-    # Bottom text box
+    # Bottom input box
     bottom_bar_rect = pygame.Rect(
         window_width * 0.07 * width_scale_factor,
         window_height * 0.78 * height_scale_factor,
-        window_width * 0.86 * width_scale_factor,
+        window_width * 0.4 * width_scale_factor,
         window_height * 0.08 * height_scale_factor
     )
 
     pygame.draw.rect(screen, WHITE, bottom_bar_rect, border_radius=4)
 
-    bottom_text = font_label.render(
-        "TEXT PLACEHOLDER — advice will appear here later",
-        True, BLACK
+    if user_input:
+        input_text = font_generic.render(user_input, True, BLACK)
+    else:
+        input_text = font_generic.render("Enter text here ", True, BLACK)
+    
+    screen.blit(input_text, (bottom_bar_rect.x + 12, bottom_bar_rect.y + 18))
+
+    # Help box
+    command_box_rect = pygame.Rect(
+        window_width * 0.52 * width_scale_factor,
+        window_height * 0.78 * height_scale_factor,
+        window_width * 0.4 * width_scale_factor,
+        window_height * 0.08 * height_scale_factor
     )
+    pygame.draw.rect(screen, WHITE, command_box_rect, border_radius=4)
+    screen.blit(font_generic.render("Guide: ", True, BLACK), (command_box_rect.x + 12, command_box_rect.y + 18))
+    screen.blit(font_small.render("- Type commands in the left box", True, BLACK), (command_box_rect.x + 12, command_box_rect.y + 40))
+    screen.blit(font_small.render("- Click 'Graph Mode' to toggle graph display", True, BLACK), (command_box_rect.x + 12, command_box_rect.y + 60))
 
-    screen.blit(bottom_text, (bottom_bar_rect.x + 12, bottom_bar_rect.y + 18))
-
+    # Command list box
+    command_list_rect = pygame.Rect(
+        window_width * 0.07 * width_scale_factor,
+        window_height * 0.88 * height_scale_factor,
+        window_width * 0.4 * width_scale_factor,
+        window_height * 0.10 * height_scale_factor
+    )
+    pygame.draw.rect(screen, WHITE, command_list_rect, border_radius=4)
+    screen.blit(font_generic.render("Command List: ", True, BLACK), (command_list_rect.x + 12, command_list_rect.y + 18))
 
 def main_ui_run():
-    global running, screen_height, screen_width
+    global running, screen_height, screen_width, user_input
 
     pygame.init()
 
@@ -157,6 +188,12 @@ def main_ui_run():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    user_input = user_input[:-1]
+                elif event.unicode.isprintable():
+                    user_input += event.unicode
 
             handle_graph_toggle(event, window_width, window_height, width_scale_factor, height_scale_factor)
 
