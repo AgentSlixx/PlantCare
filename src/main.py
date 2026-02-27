@@ -2,6 +2,7 @@ from user_controller import manage_users, manage_user_data
 from ui_main import main_ui_run
 from plantbook_api import PlantbookAPI
 from user_logins import user_login
+from user_store import load_users
 
 
 logged_in = False
@@ -40,7 +41,7 @@ def logged_in_menu():
                 print(f"Client Secret: {current_user.client_secret}")
                 print(f"Plants: {current_user.plants}")
                 manage_user_data(current_user)
-            elif main_choice == "3": #RE-ORDER
+            elif main_choice == "3": 
                 user_plant_search_decision = input("Do you want to search for a new plant to add to your collection? (y/n): ").strip().lower()
                 if user_plant_search_decision == "y":
                     PlantbookAPI.plant_class_run(current_user)

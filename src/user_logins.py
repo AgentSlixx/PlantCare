@@ -8,7 +8,7 @@ class logged_in_user_class:
         self.client_id = client_id
         self.client_secret = client_secret
         self.plants = plants
-
+        
 def user_login():
     username = input("Enter username: ").strip().lower()
     password = input("Enter password: ")

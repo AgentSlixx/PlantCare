@@ -1,19 +1,11 @@
-import user_logins
-
 class Plant:
-    def __init__(self, plant_name, light_limits, temperature_limits, humidity_limits, moisture_limits, species, health, growth_stage, water_absorption_rate):
+    def __init__(self, plant_name, light_limits, temperature_limits, humidity_limits, moisture_limits):
         self.plant_name = plant_name
         self.light_limits = light_limits
         self.temperature_limits = temperature_limits
         self.humidity_limits = humidity_limits
         self.moisture_limits = moisture_limits
-        self.species = species
-        self.health = health
-        self.growth_stage = growth_stage
-        self.water_absorption_rate = water_absorption_rate
-
-        
-
+    
     def is_plant_unhealthy_light(self):
         return self.light_current < self.light_limits[0] or self.light_current > self.light_limits[1]
 

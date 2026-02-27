@@ -96,7 +96,7 @@ class PlantbookAPI:
             if username in users_data.get("users", {}):
                 users_data["users"][username].setdefault("plants", [])
                 users_data["users"][username]["plants"].append({
-                    "name": user_plant.name,
+                    "name": user_plant.plant_name,
                     "light_limits": user_plant.light_limits,
                     "temperature_limits": user_plant.temperature_limits,
                     "humidity_limits": user_plant.humidity_limits,
@@ -104,11 +104,11 @@ class PlantbookAPI:
                 })
                 with open("data/users.json", "w") as g:
                     json.dump(users_data, g, indent=4)
-                print(f"Plant '{user_plant.name}' saved to user '{username}'.")
+                print(f"Plant '{user_plant.plant_name}' saved to user '{username}'.")
             else:
                 print("Username not found. Plant not saved.")    
 
-                    #TEST AND FIX
+                    
 
 #if __name__ == "__main__":
     #PlantbookAPI.class_run()

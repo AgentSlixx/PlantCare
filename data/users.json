@@ -23,44 +23,6 @@
                         7,
                         50
                     ]
-                },
-                {
-                    "name": "k",
-                    "light_limits": [
-                        1800,
-                        20000
-                    ],
-                    "temperature_limits": [
-                        10,
-                        32
-                    ],
-                    "humidity_limits": [
-                        30,
-                        80
-                    ],
-                    "moisture_limits": [
-                        15,
-                        60
-                    ]
-                },
-                {
-                    "name": "hibiscus",
-                    "light_limits": [
-                        4000,
-                        55000
-                    ],
-                    "temperature_limits": [
-                        10,
-                        35
-                    ],
-                    "humidity_limits": [
-                        30,
-                        80
-                    ],
-                    "moisture_limits": [
-                        15,
-                        60
-                    ]
                 }
             ]
         }
