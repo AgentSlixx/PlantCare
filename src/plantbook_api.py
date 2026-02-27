@@ -18,31 +18,17 @@ class PlantbookAPI:
         self.headers = {"Authorization": f"Bearer {self.token}"}
 
     def get_access_token(self):
-        response = requests.post(
-            f"{Base_URL}token/",
-            data={
-                "grant_type": "client_credentials",
-                "client_id": self.client_id,
-                "client_secret": self.client_secret
-            }
-        )
+        response = requests.post(f"{Base_URL}token/",data={"grant_type": "client_credentials","client_id": self.client_id,"client_secret": self.client_secret})
         response.raise_for_status()
         return response.json()["access_token"]
 
     def search_plant(self, plant_name):
-        response = requests.get(
-            f"{Base_URL}plant/search",
-            params={"alias": plant_name},
-            headers=self.headers
-        )
+        response = requests.get(f"{Base_URL}plant/search",params={"alias": plant_name},headers=self.headers)
         response.raise_for_status()
         return response.json().get("results", [])
 
     def get_plant_detail(self, pid):
-        response = requests.get(
-            f"{Base_URL}plant/detail/{pid}",
-            headers=self.headers
-        )
+        response = requests.get(f"{Base_URL}plant/detail/{pid}",headers=self.headers)
         response.raise_for_status()
         return response.json()
     

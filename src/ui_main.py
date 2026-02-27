@@ -15,7 +15,7 @@ user_input = ""
 output_lines = []  
 MAX_OUTPUT_LINES = 20
 
-def log_output(message):
+def log_output(message): #Makes sure that the terminal in the UI doesn't exceed 20 lines of code
     global output_lines
     output_lines.append(str(message))
     if len(output_lines) > MAX_OUTPUT_LINES:
@@ -133,9 +133,9 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
     # render recent output lines inside the terminal box
     line_height = font_small.get_height()
     max_lines = int(term_rect.height // line_height) - 1
-    for idx, line in enumerate(output_lines[-max_lines:]):
+    for i, line in enumerate(output_lines[-max_lines:]):
         text_surf = font_small.render(line, True, WHITE)
-        screen.blit(text_surf, (term_rect.x + 5, term_rect.y + 5 + idx * line_height))
+        screen.blit(text_surf, (term_rect.x + 5, term_rect.y + 5 + i * line_height))
 
     # Bottom input box
     bottom_bar_rect = pygame.Rect(
@@ -150,7 +150,7 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
     if user_input:
         input_text = font_generic.render(user_input, True, BLACK)
     else:
-        input_text = font_generic.render("Enter text here ", True, BLACK)
+        input_text = font_generic.render("Enter commands here ", True, BLACK)
     
     screen.blit(input_text, (bottom_bar_rect.x + 12, bottom_bar_rect.y + 18))
 
