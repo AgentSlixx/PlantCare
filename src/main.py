@@ -20,6 +20,7 @@ def logged_out_menu():
 
 def logged_in_menu():
     global running
+    global current_user
     if __name__ == "__main__":
         print("Welcome to the Plant Management System")
         while running:

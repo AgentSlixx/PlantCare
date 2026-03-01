@@ -1,5 +1,8 @@
+# user_logins.py
 from user_store import load_users
 from utils.hashing import hash_algorithm
+
+current_user = None  # global variable for currently logged-in user
 
 class logged_in_user_class:
     def __init__(self, username, password_hash, client_id, client_secret, plants):
@@ -8,8 +11,9 @@ class logged_in_user_class:
         self.client_id = client_id
         self.client_secret = client_secret
         self.plants = plants
-        
+
 def user_login():
+    global current_user
     username = input("Enter username: ").strip().lower()
     password = input("Enter password: ")
     data = load_users()
@@ -35,4 +39,3 @@ def user_login():
         print(f"User '{username}' does not exist")
 
     return logged_in, current_user
-
