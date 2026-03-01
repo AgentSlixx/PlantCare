@@ -2,12 +2,11 @@ import user_store
 import user_logins
 selected_plant = None
 
-def user_choose_plant(user=None):
+def user_choose_plant():
     global selected_plant
+    user = user_logins.current_user
 
-    if user is None:
-        user = user_logins.current_user
-    if not user or not user.plants:
+    if not user or not user.plants: # Check if user has plants
         print("No plants found for the current user.")
         selected_plant = None
         return None
@@ -16,7 +15,7 @@ def user_choose_plant(user=None):
 
     while True:
         print("\nYour Plants:")
-        for i, plant in enumerate(user_plants, 1):
+        for i, plant in enumerate(user_plants, 1): # Lists the plants on the users account
             print(f"{i}. {plant['name']}")
 
         choice = input("Select a plant by number: ").strip()
