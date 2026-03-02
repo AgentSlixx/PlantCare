@@ -13,9 +13,7 @@ def logged_out_menu():
     print("Login to access Plant Management System")
     global logged_in, current_user
     logged_in, current_user = user_login()
-    if logged_in:
-        print(f"Welcome, {current_user.username}!")
-    else:
+    if not logged_in:
         print("Login failed. Please try again.")    
 
 def logged_in_menu():
@@ -36,11 +34,11 @@ def logged_in_menu():
             if main_choice == "1":
                 manage_users()
             elif main_choice == "2":
-                print("Testing current user info:")
-                print(f"Username: {current_user.username}")
-                print(f"Client ID: {current_user.client_id}")
-                print(f"Client Secret: {current_user.client_secret}")
-                print(f"Plants: {current_user.plants}")
+                print("Testing current user info:\n" +
+                      f"Username: {current_user.username}\n" +
+                      f"Client ID: {current_user.client_id}\n" +
+                      f"Client Secret: {current_user.client_secret}\n" +
+                      f"Plants: {current_user.plants}")
                 manage_user_data(current_user)
             elif main_choice == "3": 
                 user_plant_search_decision = input("Do you want to search for a new plant to add to your collection? (y/n): ").strip().lower()

@@ -1,5 +1,6 @@
 from user_store import add_user, remove_user, list_users, remove_all_users, remove_plant_from_user, save_users, load_users
 from utils.hashing import hash_algorithm
+from user_logins import logged_in_user_class
 
 
 def manage_users():
@@ -21,7 +22,6 @@ def manage_users():
 
             try:
                 add_user(username.lower().strip(), password, client_id, client_secret)
-                print(f"User '{username.strip()}' added successfully")
             except ValueError as error:
                 print(error)
 
@@ -59,48 +59,96 @@ def manage_user_data(current_user):
     if user_change_data == "1":
         new_username = input("Enter new username: ")  
         data = load_users()
-        for i in data["users"]:
+        for i in list(data["users"]):
             if i == current_user.username:
-                data["users"][new_username] = data["users"].pop(i)
-                save_users(data)
-                print(f"Username changed to '{new_username}'")
-        current_user = load_users()["users"][new_username]        
+                if i == "admin":
+                    print("Cannot change admin username")
+                    return
+                else:
+                    confirmation = input("Enter password to confirm username change: ")
+                    if hash_algorithm(confirmation) == data["users"][i]["password"]:
+                        data["users"][new_username] = data["users"].pop(i)
+                        save_users(data)
+                        print(f"Username changed to '{new_username}'")
+                        current_user = load_users()["users"][new_username]
+                    else:
+                        print("Incorrect password")
     elif user_change_data == "2":
         new_password = input("Enter new password: ")
         data = load_users()
-        for i in data["users"]:
+        for i in list(data["users"]):
             if i == current_user.username:
-                data["users"][i]["password"] = hash_algorithm(new_password)
-                save_users(data)
-                print("Password changed successfully")
-        current_user = load_users()["users"][current_user.username]        
+                if i == "admin":
+                    print("Cannot change admin password")
+                    return
+                else:
+                    confirmation = input("Enter current password to confirm change: ")
+                    if hash_algorithm(confirmation) == data["users"][i]["password"]:
+                        data["users"][i]["password"] = hash_algorithm(new_password)
+                        save_users(data)
+                        print("Password changed successfully")
+                        current_user = load_users()["users"][current_user.username]
+                    else:
+                        print("Incorrect password")
     elif user_change_data == "3":
         new_client_id = input("Enter new client ID: ")
         data = load_users()
-        for i in data["users"]:
+        for i in list(data["users"]):
             if i == current_user.username:
-                data["users"][i]["client_id"] = new_client_id
-                save_users(data)
-                print("Client ID changed successfully")
-        current_user = load_users()["users"][current_user.username]
+                if i == "admin":
+                    print("Cannot change admin client ID")
+                    return
+                else:
+                    confirmation = input("Enter current password to confirm change: ")
+                    if hash_algorithm(confirmation) == data["users"][i]["password"]:
+                        data["users"][i]["client_id"] = new_client_id
+                        save_users(data)
+                        print("Client ID changed successfully")
+                        current_user = load_users()["users"][current_user.username]
+                    else:
+                        print("Incorrect password")
     elif user_change_data == "4":
         new_client_secret = input("Enter new client secret: ")
         data = load_users()
-        for i in data["users"]:
+        for i in list(data["users"]):
             if i == current_user.username:
-                data["users"][i]["client_secret"] = new_client_secret
-                save_users(data)
-                print("Client secret changed successfully")
-        current_user = load_users()["users"][current_user.username]
+                if i == "admin":
+                    print("Cannot change admin client secret")
+                    return
+                else:
+                    confirmation = input("Enter current password to confirm change: ")
+                    if hash_algorithm(confirmation) == data["users"][i]["password"]:
+                        data["users"][i]["client_secret"] = new_client_secret
+                        save_users(data)
+                        print("Client secret changed successfully")
+                        current_user = load_users()["users"][current_user.username]
+                    else:
+                        print("Incorrect password")
     elif user_change_data == "5":
         plant_name_input = input("Enter the name of the plant to remove: ")
+        user_data = load_users()["users"][current_user.username]
+        current_user = logged_in_user_class(
+            current_user.username,
+            user_data.get("password"),
+            user_data.get("client_id"),
+            user_data.get("client_secret"),
+            user_data.get("plants")
+        )
         plant_names = [current_user.plants[i]["name"] for i in range(len(current_user.plants))]
         print(plant_names)
-        if plant_name_input in plant_names:
+        if any(plant_name_input.lower() == name.lower() for name in plant_names):
             remove_plant_from_user(current_user.username, plant_name_input)
+            user_data = load_users()["users"][current_user.username]
+            current_user = logged_in_user_class(
+                current_user.username,
+                user_data.get("password"),
+                user_data.get("client_id"),
+                user_data.get("client_secret"),
+                user_data.get("plants")
+            )
+            plant_names = [current_user.plants[i]["name"] for i in range(len(current_user.plants))]
             print(plant_names)
         else:
             print("Plant not found in user's collection")
-            current_user = load_users()["users"][current_user.username]
     elif user_change_data == "6":
         print("Exiting user data management")                                    

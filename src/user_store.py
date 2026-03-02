@@ -37,9 +37,13 @@ def remove_user(username):
     if username == "admin":
         return (False, "Cannot remove admin user")
     else:
-        del data["users"][username]
-        save_users(data)
-        return (True, f"User '{username}' removed")
+        password_input = input("Enter the users password to confirm deletion: ")
+        if hash_algorithm(password_input) == data["users"][username]["password"]:
+            del data["users"][username]
+            save_users(data)
+            return (True, f"User '{username}' removed")
+        else:
+            return (False, "Incorrect password")
 
 #Admin only (me)
 def remove_all_users():
