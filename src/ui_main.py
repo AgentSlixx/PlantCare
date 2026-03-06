@@ -160,15 +160,14 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
         "humidity <%>"
     ]
     line_y = command_list_rect.y + 8
-    for cmd in commands:
-        screen.blit(font_small.render(cmd, True, BLACK), (command_list_rect.x + 12, line_y))
+    for i in commands:
+        screen.blit(font_small.render(i, True, BLACK), (command_list_rect.x + 12, line_y))
         line_y += 18
 
 def main_ui_run():
     global running, screen_height, screen_width, user_input, graph_mode
 
-    # Let user select a plant from current_user in user_logins
-    selected_plant = simulator.user_choose_plant()  # uses user_logins.current_user internally
+    selected_plant = simulator.user_choose_plant() #Not used? What even is used, figure this out bucko
 
     running = True
     user_input = ""

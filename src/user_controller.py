@@ -135,7 +135,7 @@ def manage_user_data(current_user):
             user_data.get("plants")
         )
         plant_names = [current_user.plants[i]["name"] for i in range(len(current_user.plants))]
-        print(plant_names)
+        print(f"Current plants: {plant_names}")
         if any(plant_name_input.lower() == name.lower() for name in plant_names):
             remove_plant_from_user(current_user.username, plant_name_input)
             user_data = load_users()["users"][current_user.username]
@@ -147,7 +147,7 @@ def manage_user_data(current_user):
                 user_data.get("plants")
             )
             plant_names = [current_user.plants[i]["name"] for i in range(len(current_user.plants))]
-            print(plant_names)
+            print(f"New plants: {plant_names}")
         else:
             print("Plant not found in user's collection")
     elif user_change_data == "6":
