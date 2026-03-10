@@ -1,5 +1,25 @@
-import user_store
 import user_logins
+
+Graph_keys = ["humidity", "temperature", "moisture", "sunlight"]
+Graph_labels = {
+    "humidity": "Humidity",
+    "temperature": "Temperature",
+    "moisture": "Moisture",
+    "sunlight": "Sunlight",
+}
+Graph_units = {
+    "humidity": "%",
+    "temperature": "C",
+    "moisture": "%",
+    "sunlight": "lux",
+}
+Physical_bounds = {
+    "humidity": (0.0, 100.0),
+    "temperature": (-30.0, 80.0),
+    "moisture": (0.0, 100.0),
+    "sunlight": (0.0, 200000.0),
+}
+
 selected_plant = None
 
 def user_choose_plant():
@@ -30,40 +50,3 @@ def user_choose_plant():
         print("Invalid selection. Please try again.")
 
 
-def add_water(amount):
-    if selected_plant is None:
-        print("No plant selected. Please choose a plant first.")
-        return
-    print(f"Adding {amount} ml of water to the plant.")
-    plant_data = user_store.load_users()
-    plant_data["plants"][selected_plant]["water_level"] += amount
-    user_store.save_users(plant_data)
-
-def add_sunlight(amount):
-    if selected_plant is None:
-        print("No plant selected. Please choose a plant first.")
-        return
-    print(f"Adding {amount} lux to the plant.")
-    plant_data = user_store.load_users()
-    plant_data["plants"][selected_plant]["sunlight_exposure"] += amount
-    user_store.save_users(plant_data)    
-
-def add_humidity(amount):
-    if selected_plant is None:
-        print("No plant selected. Please choose a plant first.")
-        return
-    print(f"Adding {amount}% humidity to the plant.")
-    plant_data = user_store.load_users()
-    plant_data["plants"][selected_plant]["humidity_level"] += amount
-    user_store.save_users(plant_data)
-
-def add_temperature(amount):
-    if selected_plant is None:
-        print("No plant selected. Please choose a plant first.")
-        return
-    print(f"Adding {amount}°C to the plant's environment.")
-    plant_data = user_store.load_users()
-    plant_data["plants"][selected_plant]["temperature"] += amount
-    user_store.save_users(plant_data)    
-
-    #TO BE CONTINUED MAKE WORK

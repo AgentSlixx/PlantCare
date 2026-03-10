@@ -74,7 +74,6 @@ class PlantbookAPI:
 
             user_plant = Plant(plant_name, plant_light_limits, plant_temperature_limits, plant_humidity_limits, plant_moisture_limits)
 
-        
             # send plant data to users.json in the logged in user's plants list
             with open("data/users.json", "r") as g:
                 users_data = json.load(g)
