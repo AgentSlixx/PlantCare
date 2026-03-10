@@ -1,7 +1,6 @@
-# ui_main.py
+import time
 import pygame
 import simulator
-import user_logins
 
 ORANGE = (255, 159, 15)
 BLUE = (21, 96, 130)
@@ -140,9 +139,9 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
         window_height * 0.08 * height_scale_factor
     )
     pygame.draw.rect(screen, WHITE, command_box_rect, border_radius=4)
-    screen.blit(font_generic.render("Guide: ", True, BLACK), (command_box_rect.x + 12, command_box_rect.y + 18))
-    screen.blit(font_small.render("- Type commands in the left box", True, BLACK), (command_box_rect.x + 12, command_box_rect.y + 40))
-    screen.blit(font_small.render("- Click 'Graph Mode' to toggle graph display", True, BLACK), (command_box_rect.x + 12, command_box_rect.y + 60))
+    screen.blit(font_generic.render("Guide: ", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 18 * height_scale_factor))
+    screen.blit(font_small.render("- Type commands in the left box", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 40 * height_scale_factor))
+    screen.blit(font_small.render("- Click 'Graph Mode' to toggle graph display", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 60 * height_scale_factor))
 
     # Command list
     command_list_rect = pygame.Rect(
@@ -159,10 +158,10 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
         "temperature <C>",
         "humidity <%>"
     ]
-    line_y = command_list_rect.y + 8
+    line_y = command_list_rect.y + 8 * height_scale_factor
     for i in commands:
-        screen.blit(font_small.render(i, True, BLACK), (command_list_rect.x + 12, line_y))
-        line_y += 18
+        screen.blit(font_small.render(i, True, BLACK), (command_list_rect.x + 12 * width_scale_factor, line_y))
+        line_y += 18 * height_scale_factor
 
 def main_ui_run():
     global running, screen_height, screen_width, user_input, graph_mode
@@ -208,9 +207,13 @@ def main_ui_run():
                         log_output(f"> {user_input}")
                         cmd = user_input.lower()
                         if cmd == "help":
-                            log_output("Available commands: help, water, sunlight, status")
+                            log_output("Available commands: help, status, quit")
                         elif cmd == "status":
                             log_output("Plant status: Humidity=--, Moisture=--, Sunlight=--, Temperature=--")
+                        elif cmd == "quit":
+                            log_output("Exiting the program")
+                            time.sleep(1)
+                            running = False
                         else:
                             log_output("Unknown command")
                     user_input = ""
