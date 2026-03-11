@@ -49,4 +49,3 @@ def user_choose_plant():
 
         print("Invalid selection. Please try again.")
 
-
