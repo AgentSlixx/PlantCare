@@ -16,12 +16,17 @@ graph_mode = False
 user_input = ""
 output_lines = []  
 MAX_OUTPUT_LINES = 20
+commands = ["help", "clear", "quit"]
 
 def log_output(message):
     global output_lines
     output_lines.append(str(message))
     if len(output_lines) > MAX_OUTPUT_LINES:
         output_lines.pop(0)
+
+def clear_output():
+    global output_lines
+    output_lines = []
 
 def handle_graph_toggle(event, window_width, window_height, width_scale_factor, height_scale_factor):
     global graph_mode
@@ -123,32 +128,32 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
     # Bottom input box
     bottom_bar_rect = pygame.Rect(
         window_width * 0.07 * width_scale_factor,
-        window_height * 0.78 * height_scale_factor,
+        window_height * 0.68 * height_scale_factor,
         window_width * 0.4 * width_scale_factor,
-        window_height * 0.08 * height_scale_factor
+        window_height * 0.12 * height_scale_factor
     )
     pygame.draw.rect(screen, WHITE, bottom_bar_rect, border_radius=4)
     input_text = user_input if user_input else "Enter commands here "
-    screen.blit(font_generic.render(input_text, True, BLACK), (bottom_bar_rect.x + 12, bottom_bar_rect.y + 18))
+    screen.blit(font_generic.render(input_text, True, BLACK), (bottom_bar_rect.x + 12, bottom_bar_rect.y + 16))
 
     # Help box
     command_box_rect = pygame.Rect(
         window_width * 0.52 * width_scale_factor,
-        window_height * 0.78 * height_scale_factor,
+        window_height * 0.68 * height_scale_factor,
         window_width * 0.4 * width_scale_factor,
-        window_height * 0.08 * height_scale_factor
+        window_height * 0.12 * height_scale_factor
     )
     pygame.draw.rect(screen, WHITE, command_box_rect, border_radius=4)
-    screen.blit(font_generic.render("Guide: ", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 18 * height_scale_factor))
-    screen.blit(font_small.render("- Type commands in the left box", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 40 * height_scale_factor))
+    screen.blit(font_generic.render("Guide: ", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 12 * height_scale_factor))
+    screen.blit(font_small.render("- Type commands in the left box - 'help' to display commands", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 38 * height_scale_factor))
     screen.blit(font_small.render("- Click 'Graph Mode' to toggle graph display", True, BLACK), (command_box_rect.x + 12 * width_scale_factor, command_box_rect.y + 60 * height_scale_factor))
 
     # Command list
     command_list_rect = pygame.Rect(
         window_width * 0.07 * width_scale_factor,
-        window_height * 0.88 * height_scale_factor,
+        window_height * 0.83 * height_scale_factor,
         window_width * 0.4 * width_scale_factor,
-        window_height * 0.10 * height_scale_factor
+        window_height * 0.12 * height_scale_factor
     )
     pygame.draw.rect(screen, WHITE, command_list_rect, border_radius=4)
     commands = [
@@ -207,9 +212,9 @@ def main_ui_run():
                         log_output(f"> {user_input}")
                         cmd = user_input.lower()
                         if cmd == "help":
-                            log_output("Available commands: help, status, quit")
-                        elif cmd == "status":
-                            log_output("Plant status: Humidity=--, Moisture=--, Sunlight=--, Temperature=--")
+                            log_output(commands)
+                        elif cmd == "clear":
+                            clear_output()
                         elif cmd == "quit":
                             log_output("Exiting the program")
                             time.sleep(1)
@@ -227,3 +232,6 @@ def main_ui_run():
         pygame.display.flip()
 
     pygame.quit()
+
+if __name__ == "__main__":
+    main_ui_run()    
