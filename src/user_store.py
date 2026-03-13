@@ -57,16 +57,16 @@ def list_users():
     data = load_users()
     print(list(data["users"].keys()))
 
-def list_password_hash(username):
-    users = load_users()
-    user_found = False
-    for i in users["users"]:
-        if i == username:
-            user_found = True
-            return users["users"][i]["password"]
-    if user_found == False:
-        print(f"User '{username}' not found")
-        return None
+#def list_password_hash(username): #
+#    users = load_users()
+#    user_found = False
+#    for i in users["users"]:
+#        if i == username:
+#            user_found = True
+#            return users["users"][i]["password"]
+#    if user_found == False:
+#        print(f"User '{username}' not found")
+#        return None
             
 def remove_plant_from_user(username, plant_name):
     data = load_users()

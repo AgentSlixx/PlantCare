@@ -67,5 +67,3 @@ while running:
     elif running == False:
         print("Exiting the program")
         break       
-
-

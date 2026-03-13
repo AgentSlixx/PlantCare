@@ -233,5 +233,5 @@ def main_ui_run():
 
     pygame.quit()
 
-if __name__ == "__main__":
-    main_ui_run()    
+"""if __name__ == "__main__":
+    main_ui_run()"""    
