@@ -1,4 +1,6 @@
+import time
 import user_logins
+import user_store
 
 Graph_keys = ["humidity", "temperature", "moisture", "sunlight"]
 Graph_labels = {
@@ -67,4 +69,12 @@ def time_of_day():
     speed = user_set_simulation_speed()
     time_of_day = 12
     while True:
-        #if speed is 1, time moves by 30 mins every second
+        time_of_day += 0.5 * speed
+        if time_of_day >= 24:
+            time_of_day -= 24
+        time.sleep(1)   
+
+def water_change():
+    #get the plant data from user.json and make the starting water level the midpoint of the plant's water limits
+    # then slowly decrease the water over time based on the simulation speed, and if the water level goes below the plant's minimum water limit, log a warning message
+    pass
