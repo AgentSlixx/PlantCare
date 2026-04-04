@@ -58,7 +58,8 @@ def logged_in_menu():
             else:
                 print("Invalid option")
 
-            
+          
+
 while running:
     if not logged_in:
         logged_out_menu()      
@@ -66,6 +67,4 @@ while running:
         logged_in_menu()
     elif running == False:
         print("Exiting the program")
-        break       
-
-
+        break
