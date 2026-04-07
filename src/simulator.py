@@ -1,4 +1,6 @@
+import time
 import user_logins
+import user_store
 
 Graph_keys = ["humidity", "temperature", "moisture", "sunlight"]
 Graph_labels = {
@@ -67,6 +69,19 @@ def user_choose_plant():
 
         print("Invalid selection. Please try again.")
 
+def user_set_simulation_speed():
+    speed = 1
+    while True:
+        speed = input("Enter the simulation speed in seconds (e.g., 1 for regular-speed, 2 for double speed): ").strip()
+        if speed and speed.isdigit() and int(speed):
+            if int(speed) <= 0:
+                print("Simulation speed must be a positive integer.")
+            elif int(speed) > 10:
+                print("Simulation speed is too high. Please enter a value between 1 and 10.")
+            else:
+                return int(speed)
+        else: 
+            print("Invalid input. Please enter a positive integer for the simulation speed.")
 
 def set_simulation_speed(speed):
     global _simulation_speed
@@ -175,4 +190,17 @@ def set_temperature(amount):
     global _simulator_state
     _simulator_state["temperature"]["value"] = _clamp("temperature", amount)
 
-    
+
+def time_of_day():
+    speed = user_set_simulation_speed()
+    time_of_day = 12
+    while True:
+        time_of_day += 0.5 * speed
+        if time_of_day >= 24:
+            time_of_day -= 24
+        time.sleep(1)   
+
+def water_change():
+    #get the plant data from user.json and make the starting water level the midpoint of the plant's water limits
+    # then slowly decrease the water over time based on the simulation speed, and if the water level goes below the plant's minimum water limit, log a warning message
+    pass

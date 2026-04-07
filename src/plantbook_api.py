@@ -4,7 +4,6 @@ import json
 
 Base_URL = "https://open.plantbook.io/api/v1/"
 
-
 class PlantbookAPI:
     def __init__(self, client_id=None, client_secret=None, current_user=None):
         if current_user is not None:
