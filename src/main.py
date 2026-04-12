@@ -1,7 +1,7 @@
 from user_controller import manage_users, manage_user_data
 from ui_main import main_ui_run
 from plantbook_api import PlantbookAPI
-from user_logins import user_login
+from user_logins import login_menu
 from user_store import load_users
 
 
@@ -10,11 +10,12 @@ current_user = None
 running = True
 
 def logged_out_menu():
-    print("Login to access Plant Management System")
+    print("\nLogin to access Plant Management System")
     global logged_in, current_user
-    logged_in, current_user = user_login()
+    logged_in, current_user = login_menu()
     if not logged_in:
-        print("Login failed. Please try again.")    
+        global running
+        running = False    
 
 def logged_in_menu():
     global running

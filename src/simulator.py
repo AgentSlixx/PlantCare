@@ -23,6 +23,8 @@ Physical_bounds = {
 }
 
 selected_plant = None
+simulation_speed = 1  # Default simulation speed
+time_counter = 0  # Global time counter for simulation cycles
 
 def user_choose_plant():
     data = user_store.load_users()
@@ -43,3 +45,127 @@ def user_choose_plant():
     except ValueError:
         print("Invalid input. Please enter a number corresponding to the plant.")
         return None
+    
+def speed_of_simulation():
+    global simulation_speed
+    user_time_input = input("Enter a number (1-10) to set the simulation speed: ")
+    try:
+        speed = int(user_time_input)
+        if 1 <= speed <= 10:
+            simulation_speed = speed
+            print(f"Simulation speed set to {speed}")
+            return speed
+        else:
+            print("Invalid input. Please enter a number between 1 and 10.")
+            return None
+    except ValueError:
+        print("Invalid input. Please enter a valid number.")
+        return None
+    
+starting_plant_data = {
+    "humidity": 50.0,
+    "temperature": 20.0,
+    "moisture": 50.0,
+    "sunlight": 10000.0,
+}
+
+def add_water_command(amount):
+    global selected_plant
+    if selected_plant:
+        print(f"Adding {amount} units of water to the plant...")
+        for i in range(5):
+            time.sleep(0.5)  # Simulate time taken to add water
+            selected_plant["moisture"] += amount / 5  # Gradually increase moisture
+            if selected_plant["moisture"] > Physical_bounds["moisture"][1]:
+                selected_plant["moisture"] = Physical_bounds["moisture"][1]  # Cap at max moisture
+            print(f"Current moisture level: {selected_plant['moisture']:.2f}%") # 2 decimal places
+
+def add_sunlight_command(amount):
+    global selected_plant
+    if selected_plant:
+        print(f"Adding {amount} units of sunlight to the plant...")
+        for i in range(5):
+            time.sleep(0.5)  # Simulate time taken to add sunlight
+            selected_plant["sunlight"] += amount / 5  # Gradually increase sunlight
+            if selected_plant["sunlight"] > Physical_bounds["sunlight"][1]:
+                selected_plant["sunlight"] = Physical_bounds["sunlight"][1]  # Cap at max sunlight
+            print(f"Current sunlight level: {selected_plant['sunlight']:.2f} lux") # 2 decimal places
+
+def add_humidity_command(amount):
+    global selected_plant
+    if selected_plant:
+        print(f"Adding {amount} units of humidity to the plant...")
+        for i in range(5):
+            time.sleep(0.5)  # Simulate time taken to add humidity
+            selected_plant["humidity"] += amount / 5  # Gradually increase humidity
+            if selected_plant["humidity"] > Physical_bounds["humidity"][1]:
+                selected_plant["humidity"] = Physical_bounds["humidity"][1]  # Cap at max humidity
+            print(f"Current humidity level: {selected_plant['humidity']:.2f}%") # 2 decimal places            
+
+def add_temperature_command(amount):
+    global selected_plant
+    if selected_plant:
+        print(f"Adding {amount} units of temperature to the plant...")
+        for i in range(5):
+            time.sleep(0.5)  # Simulate time taken to add temperature
+            selected_plant["temperature"] += amount / 5  # Gradually increase temperature
+            if selected_plant["temperature"] > Physical_bounds["temperature"][1]:
+                selected_plant["temperature"] = Physical_bounds["temperature"][1]  # Cap at max temperature
+            print(f"Current temperature level: {selected_plant['temperature']:.2f}°C") # 2 decimal places
+
+def water_change():
+    # Simulate water level change over time (evaporation until 0)
+    global selected_plant, time_counter
+    if selected_plant and selected_plant["moisture"] > 0:
+        evaporation_rate = 0.05 * simulation_speed  # Slower, realistic evaporation
+        selected_plant["moisture"] -= evaporation_rate
+        if selected_plant["moisture"] < 0:
+            selected_plant["moisture"] = 0
+
+def humidity_change():
+    # Simulate humidity change, affected by temperature and moisture
+    global selected_plant
+    if selected_plant:
+        # Humidity decreases over time but can increase with moisture
+        drying_rate = 0.02 * simulation_speed
+        selected_plant["humidity"] -= drying_rate
+        # If moisture is high, humidity increases slightly
+        if selected_plant["moisture"] > 30:
+            selected_plant["humidity"] += 0.01 * simulation_speed
+        if selected_plant["humidity"] < Physical_bounds["humidity"][0]:
+            selected_plant["humidity"] = Physical_bounds["humidity"][0]
+        if selected_plant["humidity"] > Physical_bounds["humidity"][1]:
+            selected_plant["humidity"] = Physical_bounds["humidity"][1]
+
+def temperature_change():
+    # Simulate daily temperature cycle
+    global selected_plant, time_counter
+    if selected_plant:
+        import math
+        # 1440 minutes in a day, cycle every 24 hours
+        cycle = (time_counter % 1440) / 1440 * 2 * math.pi
+        ambient_temp = 20 + 10 * math.sin(cycle)  # Varies between 10-30°C
+        # Temperature approaches ambient
+        diff = ambient_temp - selected_plant["temperature"]
+        selected_plant["temperature"] += diff * 0.01 * simulation_speed  # Gradual change
+        if selected_plant["temperature"] < Physical_bounds["temperature"][0]:
+            selected_plant["temperature"] = Physical_bounds["temperature"][0]
+        if selected_plant["temperature"] > Physical_bounds["temperature"][1]:
+            selected_plant["temperature"] = Physical_bounds["temperature"][1]
+
+def sunlight_change():
+    # Simulate daily sunlight cycle
+    global selected_plant, time_counter
+    if selected_plant:
+        import math
+        cycle = (time_counter % 1440) / 1440  # 0 to 1 over day
+        if cycle < 0.5:  # Morning to noon
+            target_sunlight = 200000 * (cycle / 0.5)
+        else:  # Noon to night
+            target_sunlight = 200000 * ((1 - cycle) / 0.5)
+        diff = target_sunlight - selected_plant["sunlight"]
+        selected_plant["sunlight"] += diff * 0.1 * simulation_speed  # Gradual change
+        if selected_plant["sunlight"] < Physical_bounds["sunlight"][0]:
+            selected_plant["sunlight"] = Physical_bounds["sunlight"][0]
+        if selected_plant["sunlight"] > Physical_bounds["sunlight"][1]:
+            selected_plant["sunlight"] = Physical_bounds["sunlight"][1]

@@ -100,15 +100,15 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
         # Add UCL/LCL lines and axis labels if plant selected
         if simulator.selected_plant:
             plant = simulator.selected_plant
-            keys = ['humidity', 'temperature', 'moisture', 'light']
+            keys = ['humidity', 'temperature', 'moisture', 'sunlight']
             limits_mapping = {
                 'humidity': 'humidity_limits',
                 'temperature': 'temperature_limits',
                 'moisture': 'moisture_limits',
-                'light': 'light_limits'
+                'sunlight': 'light_limits'
             }
             for i, key in enumerate(keys):
-                bounds = simulator.Physical_bounds[key] if key != 'light' else simulator.Physical_bounds.get('sunlight', (0, 200000))
+                bounds = simulator.Physical_bounds[key]
                 min_val, max_val = bounds
                 plant_limits = plant[limits_mapping[key]]
                 plant_min, plant_max = plant_limits
@@ -135,6 +135,15 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
                 screen.blit(min_label, (x_origin - 40, y_origin - 10))
                 screen.blit(max_label, (x_origin - 40, y_origin - axis_height - 10))
 
+                # Draw current value marker
+                if simulator.selected_plant:
+                    value = simulator.selected_plant.get(key, 0)
+                    plant_limits = simulator.selected_plant[limits_mapping[key]]
+                    min_limit, max_limit = plant_limits
+                    color = RED if value < min_limit or value > max_limit else WHITE
+                    y_val = y_pos(value)
+                    pygame.draw.line(screen, color, (x_origin, y_val), (x_origin + spacing * 0.6, y_val), 3)
+
     # Graph toggle button
     btn_y = window_height * 0.55 * height_scale_factor
     btn_w = window_width * 0.06 * width_scale_factor
@@ -150,10 +159,63 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
             x = graph_area.x + spacing * i + spacing * 0.15
             value_rect = pygame.Rect(x, graph_area.bottom - axis_height, spacing * 0.6, 30)
             pygame.draw.rect(screen, LIGHT_GREY, value_rect)
-            value_text = font_small.render("Value: --", True, BLACK)
+            if simulator.selected_plant:
+                key = ['humidity', 'temperature', 'moisture', 'sunlight'][i]
+                value = simulator.selected_plant.get(key, 0)
+                limits_key = 'light_limits' if key == 'sunlight' else f'{key}_limits'
+                min_limit, max_limit = simulator.selected_plant[limits_key]
+                color = RED if value < min_limit or value > max_limit else BLACK
+                value_text = font_small.render(f"{value:.1f}", True, color)
+            else:
+                value_text = font_small.render("--", True, BLACK)
             screen.blit(value_text, (value_rect.x + 8, value_rect.y + 6))       
 
     screen.blit(font_small.render("GRAPH MODE", True, WHITE), (graph_btn.x, graph_btn.bottom + 6))
+
+    # Directions box
+    directions_rect = pygame.Rect(
+        window_width * 0.55 * width_scale_factor,
+        window_height * 0.84 * height_scale_factor,
+        window_width * 0.38 * width_scale_factor,
+        window_height * 0.15 * height_scale_factor
+    )
+    pygame.draw.rect(screen, WHITE, directions_rect, border_radius=4)
+    screen.blit(font_generic.render("Plant Care Directions:", True, BLACK), (directions_rect.x + 10, directions_rect.y + 5))
+
+    directions = []
+    if simulator.selected_plant:
+        moisture = simulator.selected_plant.get('moisture', 0)
+        humidity = simulator.selected_plant.get('humidity', 0)
+        temperature = simulator.selected_plant.get('temperature', 0)
+        sunlight = simulator.selected_plant.get('sunlight', 0)
+        
+        moist_min, moist_max = simulator.selected_plant['moisture_limits']
+        humid_min, humid_max = simulator.selected_plant['humidity_limits']
+        temp_min, temp_max = simulator.selected_plant['temperature_limits']
+        light_min, light_max = simulator.selected_plant['light_limits']
+        
+        if moisture < moist_min:
+            directions.append(f"Water the plant by {int((moist_max - moisture) / 2)} ml")
+        if moisture > moist_max:
+            directions.append("Reduce watering")
+        if humidity < humid_min:
+            directions.append("Increase humidity (e.g., mist the plant)")
+        if humidity > humid_max:
+            directions.append("Reduce humidity")
+        if temperature < temp_min:
+            directions.append("Move plant to a warmer location")
+        if temperature > temp_max:
+            directions.append("Move plant to a cooler location")
+        if sunlight < light_min:
+            directions.append(f"Provide more sunlight ({int(light_min - sunlight)} lux needed)")
+        if sunlight > light_max:
+            directions.append("Move plant to shade")
+    
+    if not directions:
+        directions.append("Plant conditions are optimal!")
+
+    for i, dir_text in enumerate(directions[:3]):  # Now can fit 3
+        screen.blit(font_small.render(dir_text, True, BLACK), (directions_rect.x + 10, directions_rect.y + 25 + i * 18))
 
     # Terminal/output area
     term_rect = pygame.Rect(
@@ -195,17 +257,20 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
     # Command list
     command_list_rect = pygame.Rect(
         window_width * 0.07 * width_scale_factor,
-        window_height * 0.83 * height_scale_factor,
+        window_height * 0.84 * height_scale_factor,
         window_width * 0.4 * width_scale_factor,
-        window_height * 0.12 * height_scale_factor
+        window_height * 0.15 * height_scale_factor
     )
     pygame.draw.rect(screen, WHITE, command_list_rect, border_radius=4)
     commands = [
-        "Command List:",
-        "water <ml>",
-        "sunlight <lux>",
-        "temperature <C>",
-        "humidity <%>"
+        "Available Commands:",
+        "water <ml> - Add water to increase moisture",
+        "sunlight <lux> - Add artificial sunlight",
+        "temperature <C> - Adjust temperature",
+        "humidity <%> - Increase humidity",
+        "help - Show this command list",
+        "clear - Clear the console output",
+        "quit - Exit the program"
     ]
     line_y = command_list_rect.y + 8 * height_scale_factor
     for i in commands:
@@ -216,7 +281,8 @@ def main_ui_run():
     global running, screen_height, screen_width, user_input, graph_mode
     plant_selected = False
     selected_plant = None
-    
+    simulation_speed = None
+
     while not plant_selected:
         selected_plant = simulator.user_choose_plant()
         if selected_plant == 'back':
@@ -226,10 +292,17 @@ def main_ui_run():
             plant_selected = True
             simulator.selected_plant = selected_plant
 
+    while simulation_speed is None:
+        simulation_speed = simulator.speed_of_simulation()
+        if simulation_speed is None:
+            print("Please enter a valid simulation speed.")
 
     if selected_plant is None:
         running = False
         return
+
+    # Initialize current plant data
+    simulator.selected_plant.update(simulator.starting_plant_data)
 
     running = True
     user_input = ""
@@ -250,11 +323,22 @@ def main_ui_run():
     pygame.display.set_caption("Main UI")
 
     clock = pygame.time.Clock()
+    last_update = time.time()
 
     while running:
         clock.tick(60)
         width_scale_factor = screen.get_width() / screen_width
         height_scale_factor = screen.get_height() / screen_height
+
+        # Update simulation data periodically
+        current_time = time.time()
+        if current_time - last_update > 0.5 / simulation_speed:
+            simulator.time_counter += 0.1  # Slower time progression for realistic cycles
+            simulator.water_change()
+            simulator.humidity_change()
+            simulator.temperature_change()
+            simulator.sunlight_change()
+            last_update = current_time
 
         screen.fill(BLUE)
 
@@ -277,6 +361,34 @@ def main_ui_run():
                             log_output("Exiting the program")
                             time.sleep(1)
                             running = False
+                        elif cmd.startswith("water "):
+                            try:
+                                amount = float(cmd.split()[1])
+                                simulator.add_water_command(amount)
+                                log_output(f"Added {amount} ml of water")
+                            except (IndexError, ValueError):
+                                log_output("Usage: water <amount>")
+                        elif cmd.startswith("sunlight "):
+                            try:
+                                amount = float(cmd.split()[1])
+                                simulator.add_sunlight_command(amount)
+                                log_output(f"Added {amount} lux of sunlight")
+                            except (IndexError, ValueError):
+                                log_output("Usage: sunlight <amount>")
+                        elif cmd.startswith("temperature "):
+                            try:
+                                amount = float(cmd.split()[1])
+                                simulator.add_temperature_command(amount)
+                                log_output(f"Adjusted temperature by {amount}°C")
+                            except (IndexError, ValueError):
+                                log_output("Usage: temperature <amount>")
+                        elif cmd.startswith("humidity "):
+                            try:
+                                amount = float(cmd.split()[1])
+                                simulator.add_humidity_command(amount)
+                                log_output(f"Added {amount}% humidity")
+                            except (IndexError, ValueError):
+                                log_output("Usage: humidity <amount>")
                         else:
                             log_output("Unknown command")
                     user_input = ""
