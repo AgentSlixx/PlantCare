@@ -4,7 +4,6 @@ from plantbook_api import PlantbookAPI
 from user_logins import login_menu
 from user_store import load_users
 
-
 logged_in = False
 current_user = None
 running = True
