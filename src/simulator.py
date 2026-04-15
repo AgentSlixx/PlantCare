@@ -28,10 +28,11 @@ Physical_bounds = {
 
 selected_plant = None
 simulation_speed = 1  # Default simulation speed
-time_counter = 0  # Global time counter for simulation cycles
+time_counter = 0  # Time counter for simulation cycles
 last_history_log = 0
 current_health_score = 100
 HISTORY_FILE = Path(__file__).resolve().parent.parent / "data" / "sample_readings.csv"
+# Sets a file path for the history log under a constant variable 
 
 def user_choose_plant():
     data = user_store.load_users()
