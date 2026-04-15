@@ -14,10 +14,16 @@ def save_users(data):
         json.dump(data, f, indent=4)
 
 def add_user(username, password, client_id, client_secret):
+    username = username.strip().lower()
+    if not username:
+        raise ValueError("Username cannot be blank")
+    if not password:
+        raise ValueError("Password cannot be blank")
+
     data = load_users()
 
     if username in data["users"]:
-        print("User already exists")
+        raise ValueError("User already exists")
     else:
         data["users"][username] = {
             "password": hash_algorithm(password),

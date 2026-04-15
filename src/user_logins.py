@@ -16,6 +16,13 @@ def user_login():
     global current_user
     username = input("Enter username: ").strip().lower()
     password = input("Enter password: ")
+    if not username:
+        print("Username cannot be blank")
+        return False, None
+    if not password:
+        print("Password cannot be blank")
+        return False, None
+
     data = load_users()
     logged_in = False
     current_user = None
@@ -47,6 +54,12 @@ def create_account():
     password = input("Enter password: ")
     client_id = input("Enter client ID: ")
     client_secret = input("Enter client secret: ")
+    if not username:
+        print("Username cannot be blank")
+        return False, None
+    if not password:
+        print("Password cannot be blank")
+        return False, None
     
     try:
         add_user(username, password, client_id, client_secret)

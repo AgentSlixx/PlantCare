@@ -16,7 +16,15 @@ graph_mode = False
 user_input = ""
 output_lines = []
 MAX_OUTPUT_LINES = 20
-commands = ["help", "clear", "quit"]
+commands = [
+    "water <ml> - Add water to increase moisture",
+    "sunlight <lux> - Add artificial sunlight",
+    "temperature <C> - Adjust temperature",
+    "humidity <%> - Increase humidity",
+    "help - Show this command list",
+    "clear - Clear the console output",
+    "quit - Exit the program",
+]
 
 def log_output(message):
     global output_lines
@@ -184,32 +192,13 @@ def draw_graph_mode_ui(screen, window_width, window_height, width_scale_factor, 
 
     directions = []
     if simulator.selected_plant:
-        moisture = simulator.selected_plant.get('moisture', 0)
-        humidity = simulator.selected_plant.get('humidity', 0)
-        temperature = simulator.selected_plant.get('temperature', 0)
-        sunlight = simulator.selected_plant.get('sunlight', 0)
-        
-        moist_min, moist_max = simulator.selected_plant['moisture_limits']
-        humid_min, humid_max = simulator.selected_plant['humidity_limits']
-        temp_min, temp_max = simulator.selected_plant['temperature_limits']
-        light_min, light_max = simulator.selected_plant['light_limits']
-        
-        if moisture < moist_min:
-            directions.append(f"Water the plant by {int((moist_max - moisture) / 2)} ml")
-        if moisture > moist_max:
-            directions.append("Reduce watering")
-        if humidity < humid_min:
-            directions.append("Increase humidity (e.g., mist the plant)")
-        if humidity > humid_max:
-            directions.append("Reduce humidity")
-        if temperature < temp_min:
-            directions.append("Move plant to a warmer location")
-        if temperature > temp_max:
-            directions.append("Move plant to a cooler location")
-        if sunlight < light_min:
-            directions.append(f"Provide more sunlight ({int(light_min - sunlight)} lux needed)")
-        if sunlight > light_max:
-            directions.append("Move plant to shade")
+        plant = simulator.selected_plant_object()
+        readings = simulator.current_readings()
+        if plant:
+            score = round(simulator.current_health_score, 1)
+            category = simulator.current_health_category()
+            directions.append(f"Health: {score}/100 ({category})")
+            directions.extend(plant.care_advice(readings))
     
     if not directions:
         directions.append("Plant conditions are optimal!")
@@ -303,6 +292,8 @@ def main_ui_run():
 
     # Initialize current plant data
     simulator.selected_plant.update(simulator.starting_plant_data)
+    simulator.reset_health_score()
+    simulator.last_history_log = 0
 
     running = True
     user_input = ""
@@ -338,6 +329,23 @@ def main_ui_run():
             simulator.humidity_change()
             simulator.temperature_change()
             simulator.sunlight_change()
+            simulator.update_health_score()
+            if current_time - simulator.last_history_log > 5:
+                readings = simulator.current_readings()
+                plant = simulator.selected_plant_object()
+                if plant:
+                    simulator.log_simulation_reading(
+                        simulator.selected_plant.get("name", "Unknown plant"),
+                        readings,
+                        round(simulator.current_health_score, 1),
+                        simulator.current_health_category()
+                    )
+                    log_output(
+                        f"Reading saved: moisture {readings.get('moisture'):.1f}%, "
+                        f"sunlight {readings.get('sunlight'):.1f} lux, "
+                        f"health {simulator.current_health_score:.1f}/100"
+                    )
+                    simulator.last_history_log = current_time
             last_update = current_time
 
         screen.fill(BLUE)
@@ -354,7 +362,8 @@ def main_ui_run():
                         log_output(f"> {user_input}")
                         cmd = user_input.lower()
                         if cmd == "help":
-                            log_output(commands)
+                            for command in commands:
+                                log_output(command)
                         elif cmd == "clear":
                             clear_output()
                         elif cmd == "quit":
@@ -364,29 +373,41 @@ def main_ui_run():
                         elif cmd.startswith("water "):
                             try:
                                 amount = float(cmd.split()[1])
-                                simulator.add_water_command(amount)
-                                log_output(f"Added {amount} ml of water")
+                                if amount < 0:
+                                    log_output("Water amount cannot be negative")
+                                else:
+                                    simulator.add_water_command(amount, log_output)
+                                    log_output(f"Added {amount} ml of water")
                             except (IndexError, ValueError):
                                 log_output("Usage: water <amount>")
                         elif cmd.startswith("sunlight "):
                             try:
                                 amount = float(cmd.split()[1])
-                                simulator.add_sunlight_command(amount)
-                                log_output(f"Added {amount} lux of sunlight")
+                                if amount < 0:
+                                    log_output("Sunlight amount cannot be negative")
+                                else:
+                                    simulator.add_sunlight_command(amount, log_output)
+                                    log_output(f"Added {amount} lux of sunlight")
                             except (IndexError, ValueError):
                                 log_output("Usage: sunlight <amount>")
                         elif cmd.startswith("temperature "):
                             try:
                                 amount = float(cmd.split()[1])
-                                simulator.add_temperature_command(amount)
-                                log_output(f"Adjusted temperature by {amount}°C")
+                                if amount < 0:
+                                    log_output("Temperature amount cannot be negative")
+                                else:
+                                    simulator.add_temperature_command(amount, log_output)
+                                    log_output(f"Adjusted temperature by {amount}°C")
                             except (IndexError, ValueError):
                                 log_output("Usage: temperature <amount>")
                         elif cmd.startswith("humidity "):
                             try:
                                 amount = float(cmd.split()[1])
-                                simulator.add_humidity_command(amount)
-                                log_output(f"Added {amount}% humidity")
+                                if amount < 0:
+                                    log_output("Humidity amount cannot be negative")
+                                else:
+                                    simulator.add_humidity_command(amount, log_output)
+                                    log_output(f"Added {amount}% humidity")
                             except (IndexError, ValueError):
                                 log_output("Usage: humidity <amount>")
                         else:
