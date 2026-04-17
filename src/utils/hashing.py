@@ -15,5 +15,4 @@ def hash_algorithm(input_string):
     hash_str = str(abs(hash_value))
     if len(hash_str) > 10:
         hash_str = hash_str[:10]
-    return hash_str
-                 
+    return hash_str  

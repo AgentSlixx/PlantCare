@@ -113,8 +113,3 @@ class PlantbookAPI:
             user_plants.append(user_plant.to_dict())
             save_users(users_data)
             print(f"Plant '{user_plant.plant_name}' saved to user '{username}'.")
-
-                    
-
-#if __name__ == "__main__":
-    #PlantbookAPI.class_run()

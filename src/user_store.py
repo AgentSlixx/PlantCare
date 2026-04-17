@@ -62,17 +62,6 @@ def remove_all_users():
 def list_users():
     data = load_users()
     print(list(data["users"].keys()))
-
-#def list_password_hash(username): #
-#    users = load_users()
-#    user_found = False
-#    for i in users["users"]:
-#        if i == username:
-#            user_found = True
-#            return users["users"][i]["password"]
-#    if user_found == False:
-#        print(f"User '{username}' not found")
-#        return None
             
 def remove_plant_from_user(username, plant_name):
     data = load_users()
@@ -92,21 +81,3 @@ def remove_plant_from_user(username, plant_name):
         if plant_found == False:
             print(f"Plant '{plant_name}' not found for user '{username}'")
             return False
-            
-        
-
-#list_users()
-#add_user("admin".lower(), "admin", "qOKVybGCvVCFBK7FGdN4RFbnpdgVbNY5RlCv4eWN", "hyYGh11RumoKzPFc9wvD46z6xEtmEVCcR0mqk2XuXDSZRL7ERNUubtO11N6KSxEWiQdMDSLj4Rhnluz3fgTdTf5pmOkZi0nqRjH6tmtCOG3O7xjEmYqvWRYemeLAYupx")
-#remove_user("jim".lower())
-#list_users()
-
-#list_users()
-#remove_all_users()
-#remove_user("admin")
-#list_users()
-
-#remove_plant_from_user("admin", "aloe vera")
-#add_user("edward ford".lower(), "password123", "ClientIDExample", "ClientSecretExample")
-#list_password_hash("edward ford")
-
-#remove_all_users()

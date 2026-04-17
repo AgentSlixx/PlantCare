@@ -423,6 +423,3 @@ def main_ui_run():
         pygame.display.flip()
 
     pygame.quit()
-
-"""if __name__ == "__main__":
-    main_ui_run()"""
