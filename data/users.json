@@ -23,8 +23,33 @@
                         7,
                         50
                     ]
+                },
+                {
+                    "name": "strawberry",
+                    "light_limits": [
+                        4000,
+                        60000
+                    ],
+                    "temperature_limits": [
+                        8,
+                        32
+                    ],
+                    "humidity_limits": [
+                        40,
+                        80
+                    ],
+                    "moisture_limits": [
+                        25,
+                        80
+                    ]
                 }
             ]
+        },
+        "newuser1": {
+            "password": "1520397101",
+            "client_id": "..",
+            "client_secret": "..",
+            "plants": []
         }
     }
 }
