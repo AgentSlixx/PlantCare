@@ -140,10 +140,10 @@ def add_temperature_command(amount, output_callback=None):
             show_message(f"Current temperature level: {selected_plant['temperature']:.2f}C", output_callback)
 
 def water_change():
-    # Simulate water level change over time (evaporation until 0)
+    # Simulate water level change over time until it reaches 0
     global selected_plant, time_counter
     if selected_plant and selected_plant["moisture"] > 0:
-        evaporation_rate = 0.05 * simulation_speed  # Slower, realistic evaporation
+        evaporation_rate = 0.05 * simulation_speed  # Slower evaporation
         selected_plant["moisture"] -= evaporation_rate
         if selected_plant["moisture"] < 0:
             selected_plant["moisture"] = 0
@@ -152,7 +152,7 @@ def humidity_change():
     # Simulate humidity change, affected by temperature and moisture
     global selected_plant
     if selected_plant:
-        # Humidity decreases over time but can increase with moisture
+        # Humidity decreases over time but is impacted by moisture
         drying_rate = 0.02 * simulation_speed
         selected_plant["humidity"] -= drying_rate
         # If moisture is high, humidity increases slightly
@@ -234,7 +234,7 @@ def current_health_category():
     return Plant.category_from_score(current_health_score)
 
 def log_simulation_reading(plant_name, readings, health_score=None, health_category=None):
-    # CSV history gives test evidence for file handling and data processing.
+    # append the current reading to the history log CSV file, creating it if it doesn't exist
     HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     plant = selected_plant_object()
     if health_score is None and plant is not None:

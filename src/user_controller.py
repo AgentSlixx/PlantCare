@@ -34,9 +34,13 @@ def manage_users():
                 print(message)
 
         elif choice == "3":
-            data = list_users()
-            if data == []:
+            users = list_users()
+            if users == []:
                 print("No users found")
+            else:
+                print("Users:")
+                for user in users:
+                    print(f"- {user}")
 
         elif choice == "4":
             password = input("Enter admin password to confirm: ")

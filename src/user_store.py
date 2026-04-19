@@ -61,8 +61,9 @@ def remove_all_users():
 
 def list_users():
     data = load_users()
-    print(list(data["users"].keys()))
-            
+    users = list(data["users"].keys())
+    return users
+
 def remove_plant_from_user(username, plant_name):
     data = load_users()
     plant_found = False
